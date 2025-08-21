@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Header from "./Header";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -12,8 +13,45 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Inline theme init to avoid flash */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(() => {
+  try {
+    const ls = localStorage.getItem('theme');
+    const mql = window.matchMedia('(prefers-color-scheme: light)');
+    const system = mql.matches ? 'light' : 'dark';
+    const theme = (ls === 'light' || ls === 'dark') ? ls : system;
+    document.documentElement.dataset.theme = theme;
+  } catch(e) {}
+})();`
+          }}
+        />
+  <style>{`#scrollTopBtn{position:fixed;right:1.25rem;bottom:1.25rem;z-index:70;opacity:0;pointer-events:none;transform:translateY(10px);transition:opacity .3s,transform .3s;}#scrollTopBtn.visible{opacity:1;pointer-events:auto;transform:translateY(0);}#scrollTopBtn button{background:var(--color-accent);color:#fff;width:44px;height:44px;border-radius:9999px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 18px -4px rgba(0,0,0,.4);border:1px solid var(--color-border);cursor:pointer;}#scrollTopBtn button:hover{background:var(--color-accent-hover);}#scrollTopBtn svg{pointer-events:none;}@media (max-width:640px){#scrollTopBtn{right:.85rem;bottom:.85rem;width:40px;height:40px;}#scrollTopBtn button{width:40px;height:40px;font-size:18px;}}`}</style>
+        <script dangerouslySetInnerHTML={{
+          __html:`(()=>{let ticking=false;const btn=()=>document.getElementById('scrollTopBtn');function onScroll(){if(!ticking){requestAnimationFrame(()=>{const sY=window.scrollY;const el=btn();if(!el) return; if(sY>300){el.classList.add('visible')}else{el.classList.remove('visible')} ticking=false;});ticking=true;}};window.addEventListener('scroll',onScroll,{passive:true});window.addEventListener('DOMContentLoaded',onScroll);window.addEventListener('pageshow',onScroll);document.addEventListener('click',e=>{const el=btn(); if(el && el.contains(e.target)){window.scrollTo({top:0,behavior:'smooth'});}});})();`
+        }} />
+      </head>
+  <body className="min-h-screen flex flex-col selection:bg-blue-600/30 theme-fade">
+        <div id="reading-progress" />
+        <Header />
+  <div className="flex-1 w-full pt-2 pb-4 md:pt-2 md:pb-5">{children}</div>
+        <footer className="mt-auto py-8 text-center text-xs text-[var(--color-text-dim)] border-t border-[var(--color-border)]">
+          <div className="container-page flex flex-col gap-2">
+            <p>&copy; {new Date().getFullYear()} ManhwaGalaxy. Unofficial fan site.</p>
+            <p className="opacity-70">Data provided for preview & educational purposes only.</p>
+          </div>
+        </footer>
+        <div id="scrollTopBtn" aria-hidden="true">
+          <button type="button" aria-label="Scroll to top">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="18 15 12 9 6 15"></polyline>
+            </svg>
+          </button>
+        </div>
+      </body>
     </html>
   );
 }

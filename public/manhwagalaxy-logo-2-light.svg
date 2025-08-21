@@ -1,0 +1,76 @@
+<svg width="240" height="80" viewBox="0 0 240 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="orbGlowLight" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0ea5e9">
+        <animate attributeName="stop-color" values="#0ea5e9;#0284c7;#0ea5e9" dur="12s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" stop-color="#0284c7">
+        <animate attributeName="stop-color" values="#0284c7;#0369a1;#0284c7" dur="12s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+    <radialGradient id="coreHaloLight" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#0ea5e9" stop-opacity="0.8">
+        <animate attributeName="stop-opacity" values="0.4;0.8;0.4" dur="8s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="70%" stop-color="#0ea5e9" stop-opacity="0">
+        <animate attributeName="stop-opacity" values="0;0.5;0" dur="8s" repeatCount="indefinite"/>
+      </stop>
+    </radialGradient>
+    <filter id="blurL" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.2" result="g"/>
+      <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <style>
+      @media (prefers-reduced-motion: reduce) {
+        g[data-anim='orbitL'], g[data-anim='orbitL-slow'], circle[data-star], circle[data-core], g[data-shooting], g[data-plane] { animation: none !important; }
+      }
+      @keyframes orbitL { 0% { transform:rotate(0deg); } 100% { transform:rotate(-360deg);} }
+      @keyframes orbitLSlow { 0% { transform:rotate(-360deg); } 100% { transform:rotate(0deg);} }
+      @keyframes twinkleL { 0%,100% { opacity:.2; } 50% { opacity:.7; } }
+      @keyframes pulseL { 0%,100% { r:10; } 50% { r:11.2; } }
+      @keyframes shootL { 0% { transform:translate(0,0) scale(.4); opacity:0; } 5% { opacity:1; } 40% { opacity:1; } 60% { opacity:0; transform:translate(120px,40px) scale(.4);} 100% { opacity:0; } }
+      @keyframes planeOrbitL { 0% { transform:rotate(0deg);} 100% { transform:rotate(-360deg);} }
+      @keyframes planeTrailL { 0% { stroke-dashoffset:18; opacity:.8;} 60% {opacity:.3;} 100% { stroke-dashoffset:0; opacity:0;} }
+      g[data-anim='orbitL'] { transform-origin:60px 40px; animation:orbitL 20s linear infinite; }
+      g[data-anim='orbitL-slow'] { transform-origin:60px 40px; animation:orbitLSlow 46s linear infinite; }
+      circle[data-star] { animation:twinkleL 4.2s ease-in-out infinite; }
+      circle[data-star='2'] { animation-duration:5s; animation-delay:.5s; }
+      circle[data-star='3'] { animation-duration:6s; animation-delay:1s; }
+      circle[data-star='4'] { animation-duration:3.4s; animation-delay:1.5s; }
+      circle[data-core] { animation:pulseL 7s ease-in-out infinite; }
+      g[data-shooting] { animation:shootL 16s ease-in-out infinite; transform-origin:60px 40px; }
+      g[data-shooting] circle { filter:url(#blurL); }
+      g[data-plane] { transform-origin:60px 40px; animation:planeOrbitL 24s linear infinite; }
+      g[data-plane] path[data-trail] { stroke-dasharray:18; animation:planeTrailL 2.6s ease-in-out infinite; }
+    </style>
+  </defs>
+  <rect width="240" height="80" rx="20" fill="#ffffff"/>
+  <g>
+    <ellipse cx="60" cy="40" rx="36" ry="16" fill="#0ea5e9" opacity="0.18"/>
+    <ellipse cx="60" cy="40" rx="26" ry="10" fill="#f59e0b" opacity="0.22"/>
+    <ellipse cx="60" cy="40" rx="16" ry="6" fill="#0f172a" opacity="0.10"/>
+    <circle cx="60" cy="40" r="20" fill="url(#coreHaloLight)" />
+    <circle cx="60" cy="40" r="10" fill="url(#orbGlowLight)" filter="url(#blurL)" data-core=""/>
+    <g data-anim="orbitL">
+      <circle cx="40" cy="30" r="2.5" fill="#1e293b" data-star="1"/>
+      <circle cx="80" cy="50" r="2" fill="#1e293b" data-star="2"/>
+      <circle cx="55" cy="55" r="1.7" fill="#f59e0b" data-star="3"/>
+      <circle cx="70" cy="25" r="2.2" fill="#1e293b" data-star="4"/>
+    </g>
+    <g data-anim="orbitL-slow">
+      <circle cx="87" cy="42" r="1.6" fill="#f59e0b" data-star="5"/>
+      <circle cx="33" cy="48" r="1.4" fill="#1e293b" data-star="6"/>
+    </g>
+  <g data-shooting="">
+      <circle cx="28" cy="18" r="2.2" fill="#1e293b"/>
+    </g>
+    <g data-plane="">
+      <g transform="translate(96 40)">
+        <path d="M0 0 L-10 -4 L-7 0 L-10 4 Z" fill="#1e293b" stroke="#0ea5e9" stroke-width="0.6" />
+        <path data-trail="" d="M-10 0 Q-22 0 -30 0" fill="none" stroke="#0ea5e9" stroke-width="0.6" stroke-linecap="round" opacity="0.6"/>
+      </g>
+    </g>
+  </g>
+  <text x="100" y="50" font-family="Segoe UI, Arial, sans-serif" font-size="32" fill="#0f172a" font-weight="bold">Manhwa</text>
+  <text x="100" y="75" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#0ea5e9" font-weight="bold">Galaxy</text>
+</svg>
