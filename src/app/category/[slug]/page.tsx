@@ -1,4 +1,5 @@
 'use client';
+export const dynamic = 'force-dynamic';
 import React, { useEffect, useState } from 'react';
 import { usePathname, useRouter, useParams } from 'next/navigation';
 import MangaCardRef from '@/components/MangaCardRef';
@@ -9,6 +10,7 @@ export default function CategoryPage() {
   const { slug } = useParams<{ slug: string }>();
   const raw = slug || '';
   const category = decodeURIComponent(raw);
+  if(!raw) return null; // guard while params resolve
   const router = useRouter();
   const pathname = usePathname();
   // Redirect special values back to home (client side)

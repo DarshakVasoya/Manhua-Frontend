@@ -8,14 +8,59 @@ export const headerCategories: Category[] = [];
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>(() => 'dark');
+  const [hidden, setHidden] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const catRef = React.useRef<HTMLDivElement | null>(null); // leftover ref (not used now)
+  const lastScrollRef = React.useRef(0);
+  const tickingRef = React.useRef(false);
+  const scrollDirRef = React.useRef<'up'|'down'|null>(null);
 
   // Hydrate theme from DOM / localStorage
   useEffect(() => {
     const current = (document.documentElement.dataset.theme as 'light'|'dark') || 'dark';
     setTheme(current);
+  setMounted(true);
   }, []);
+
+  // Hide on scroll down, show on scroll up (gentle threshold to prevent flicker)
+  useEffect(() => {
+    const onScroll = () => {
+      if(tickingRef.current) return;
+      tickingRef.current = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const last = lastScrollRef.current;
+        const delta = y - last;
+        lastScrollRef.current = y;
+        const threshold = 14; // minimal movement to trigger
+        // Determine direction only if movement surpasses threshold
+        if(Math.abs(delta) > threshold){
+          scrollDirRef.current = delta > 0 ? 'down' : 'up';
+        }
+        if(!open){
+          if(scrollDirRef.current === 'down' && y > 120){
+            // hide only if scrolled further than 120 to avoid early disappearance on small pages
+            setHidden(true);
+          } else if(scrollDirRef.current === 'up' || y < 120){
+            setHidden(false);
+          }
+        } else {
+          setHidden(false);
+        }
+        tickingRef.current = false;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [open]);
+
+  // Reset scroll tracking & show header when route (pathname) changes
+  useEffect(()=>{
+    lastScrollRef.current = window.scrollY || 0;
+    scrollDirRef.current = null;
+    setHidden(false);
+  }, [pathname]);
 
   const toggleTheme = () => {
     setTheme(t => {
@@ -28,7 +73,7 @@ export default function Header() {
   };
 
   return (
-  <div className="sticky top-0 z-40 backdrop-blur border-b border-[var(--color-border)]" style={{background: 'var(--color-header-backdrop)'}}>
+  <div className={`sticky top-0 z-40 backdrop-blur border-b border-[var(--color-border)] transition-transform duration-300 ease-out will-change-transform ${mounted ? (hidden ? '-translate-y-full opacity-0' : 'translate-y-0') : 'translate-y-0'} `} style={{background: 'var(--color-header-backdrop)'}}>
   <div className="container-page flex items-center gap-4 pt-3 pb-2">
         <a href="/" className="flex items-center gap-2 group" aria-label="Go to homepage">
           {/* Two logos; show/hide via data-theme attribute */}
