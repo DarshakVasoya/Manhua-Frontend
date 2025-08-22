@@ -22,7 +22,7 @@ export default function SearchBar({
       }}
       role="search"
       aria-label="Global search"
-      className={`items-center bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md focus-within:border-[var(--color-accent)] transition min-w-0 w-auto relative ${className}`}
+      className={`flex flex-row items-center bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md focus-within:border-[var(--color-accent)] transition min-w-0 w-auto relative ${className}`}
     >
       <input
         name="q"

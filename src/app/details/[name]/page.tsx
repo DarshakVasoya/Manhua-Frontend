@@ -52,7 +52,7 @@ export default function DetailsPage(){
     const genNameVariants = (base: string): string[] => {
       const variants = new Set<string>();
       const trimmed = base.trim();
-      const replacedQuotes = trimmed.replace(/[\u2018\u2019\u201C\u201D]/g, "'");
+      const replacedQuotes = trimmed.replace(/[]/g, "'");
       const collapsed = replacedQuotes.replace(/\s+/g,' ');
       const noPunct = collapsed.replace(/['"()!?,.:;]+/g,'');
       const ascii = noPunct.normalize('NFKD').replace(/[^\w\s-]/g,'').trim();
@@ -74,15 +74,7 @@ export default function DetailsPage(){
         detailUrls.push(`${API_BASE}/${encodeURIComponent(v)}`);
         if(v !== decodeURIComponent(v)) detailUrls.push(`${API_BASE}/${v}`); // raw variant
       });
-      let detailData: any = null;
-      let lastDetailErr: any = null;
-      for(const u of detailUrls){
-        try { detailData = await fetchJSON(u); break; } catch(e){ lastDetailErr = e; }
-      }
-      if(!detailData) throw new Error('DETAIL_FETCH_FAILED:'+ lastDetailErr);
-
       const chapterUrlCandidates = [
-        // For each name variant attempt preferred endpoints
         ...nameVariants.flatMap(v=>[
           `${API_BASE}/${encodeURIComponent(v)}/chapter?order=esc`,
           `${API_BASE}/${encodeURIComponent(v)}/chapter?order=asc`,
@@ -90,23 +82,34 @@ export default function DetailsPage(){
           `${API_BASE}/${encodeURIComponent(v)}/chapters`
         ])
       ];
+      // Parallel fetch
+      let detailData: any = null;
       let chapterData: any[] | null = null;
+      let lastDetailErr: any = null;
       let lastChapterErr: any = null;
-      for(const cu of chapterUrlCandidates){
-        try { const data = await fetchJSON(cu); if(Array.isArray(data)){ chapterData = data; break; } } catch(e){ lastChapterErr = e; }
-      }
+      await Promise.all([
+        (async () => {
+          for(const u of detailUrls){
+            try { detailData = await fetchJSON(u); break; } catch(e){ lastDetailErr = e; }
+          }
+        })(),
+        (async () => {
+          for(const cu of chapterUrlCandidates){
+            try { const data = await fetchJSON(cu); if(Array.isArray(data)){ chapterData = data; break; } } catch(e){ lastChapterErr = e; }
+          }
+        })()
+      ]);
+      if(!detailData) throw new Error('DETAIL_FETCH_FAILED:'+ lastDetailErr);
       if(!chapterData) {
         console.warn('[DetailsPage] All chapter endpoints failed', {lastChapterErr});
         chapterData = [];
       }
       // Normalize chapters ascending
-      // Transform if API returns new shape { link, chapternum, chapterdate }
       let mapped = chapterData.map((c:any, idx:number)=>{
         if(c && (c.chapternum || c.chapterdate)) {
           const rawLabel = c.chapternum || c.chapter || c.chapter_number || '';
-          // Extract numeric part (first number or decimal)
           const numMatch = /([0-9]+(?:\.[0-9]+)?)/.exec(rawLabel);
-            const parsedNum = numMatch ? numMatch[1] : (c.chapter_number ?? idx+1);
+          const parsedNum = numMatch ? numMatch[1] : (c.chapter_number ?? idx+1);
           return {
             chapter_number: parsedNum,
             title: c.title,
@@ -123,14 +126,12 @@ export default function DetailsPage(){
           rawLabel: c.chapternum || c.chapter_number
         } as Chapter;
       });
-      // Sort ascending numerically where possible
-  let ch = mapped.slice().sort((a:Chapter,b:Chapter)=>{
+      let ch = mapped.slice().sort((a:Chapter,b:Chapter)=>{
         const an = parseFloat(String(a.chapter_number)); const bn = parseFloat(String(b.chapter_number));
         if(isNaN(an) || isNaN(bn)) return 0; return an - bn;
       });
-  // Deduplicate by chapter_number (keep first occurrence)
-  const seen = new Set<string>();
-  ch = ch.filter(item => { const key = String(item.chapter_number); if(seen.has(key)) return false; seen.add(key); return true; });
+      const seen = new Set<string>();
+      ch = ch.filter(item => { const key = String(item.chapter_number); if(seen.has(key)) return false; seen.add(key); return true; });
       if(active){
         setDetails(detailData);
         setChapters(ch);
@@ -250,11 +251,13 @@ export default function DetailsPage(){
               {/* Left column */}
               <div className="w-full md:w-60 flex flex-col gap-4 md:sticky md:top-20">
                 {details.cover_image && (
-                  <div className="relative overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={details.cover_image} alt={details.name} className="w-full h-auto object-cover" loading="lazy" />
-                    {details.colored && <span className="absolute top-2 left-2 text-[10px] bg-[var(--color-accent)] text-white font-semibold px-2 py-1 rounded-md flex items-center gap-1"><span>Color</span></span>}
-                  </div>
+                  <React.Suspense fallback={<div className="w-56 aspect-[3/4.3] rounded-lg border border-[var(--color-border)] shimmer" />}>
+                    <div className="relative overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={details.cover_image} alt={details.name} className="w-full h-auto object-cover" loading="lazy" />
+                      {details.colored && <span className="absolute top-2 left-2 text-[10px] bg-[var(--color-accent)] text-white font-semibold px-2 py-1 rounded-md flex items-center gap-1"><span>Color</span></span>}
+                    </div>
+                  </React.Suspense>
                 )}
                 <button type="button" onClick={toggleBookmark} className={`px-3 py-2 rounded-md bg-[var(--color-surface)] border text-xs font-medium transition flex items-center gap-2 justify-center ${bookmarked ? 'border-[var(--color-accent)] text-[var(--color-accent)]' : 'border-[var(--color-border)] hover:border-[var(--color-accent)]'}`}> 
                   <span className="inline-block">{bookmarked ? '✅' : '🔖'}</span>{bookmarked ? 'Bookmarked' : 'Bookmark'}

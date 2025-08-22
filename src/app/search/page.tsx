@@ -15,8 +15,9 @@ export default async function SearchPage({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const q = (Array.isArray(searchParams?.query) ? searchParams.query[0] : searchParams?.query) || "";
-  const page = Number(Array.isArray(searchParams?.page) ? searchParams.page[0] : searchParams?.page) || 1;
+  const params = await searchParams;
+  const q = (Array.isArray(params?.query) ? params.query[0] : params?.query) || "";
+  const page = Number(Array.isArray(params?.page) ? params.page[0] : params?.page) || 1;
   const limit = 24;
 
   let list: any[] = [];

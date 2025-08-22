@@ -306,15 +306,11 @@ export default function ChapterNumberOnly() {
       </div>
       <section className="mt-6">
         {/* Chapter label & date removed as requested */}
-        {chapterLoading && (
+        {chapterLoading ? (
           <div className="text-sm text-[var(--color-text-dim)] py-8 text-center">Loading images…</div>
-        )}
-        {chapterError && !chapterLoading && (
+        ) : chapterError ? (
           <div className="text-sm text-red-400 py-8 text-center">{chapterError}</div>
-        )}
-        {!chapterLoading && !chapterError && chapterImages.length === 0 && (
-          <div className="text-xs text-[var(--color-text-dim)] py-6 text-center">No images available.</div>
-        )}
+        ) : null}
   <div className="flex flex-col items-center gap-0">
           {chapterImages.slice(0, visibleCount).map((origSrc, idx)=>{
             const src = overrideSrc[idx] || origSrc;

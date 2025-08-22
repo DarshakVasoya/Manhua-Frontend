@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import MangaCardRef from '@/components/MangaCardRef';
+import SubHeader from '@/components/SubHeader';
 
 const API_BASE = 'http://165.232.60.4:8000/manhwa';
 
@@ -82,19 +83,7 @@ export default function Home() {
   return (
     <main className="container-page">
       <div className="mb-5">
-        <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-          {(() => {
-            const pathname = usePathname();
-            const cats = ['Latest','Adult','Action','Adaptation','Adventure','Animal','Bloody','Business','All Manga'];
-            return cats.map(tag => {
-              const href = tag === 'Latest' ? '/' : `/category/${encodeURIComponent(tag)}`;
-              const active = pathname === href || (pathname === '/' && tag === 'Latest');
-              return (
-                <a key={tag} href={href} className={`pill-cat${active ? ' active' : ''}`}>{tag}</a>
-              );
-            });
-          })()}
-        </div>
+        <SubHeader />
       </div>
       {error && (
         <div className="mb-4 text-sm text-red-400">{error}</div>
@@ -102,11 +91,9 @@ export default function Home() {
       {loading ? (
         renderSkeletons()
       ) : (
-  <ul className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 fade-in">
-          {items.length === 0 ? (
-            <li className="col-span-full text-center text-[var(--color-text-dim)] py-8">No results.</li>
-          ) : (
-            items.map((item: any) => (
+        <>
+          <ul className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 fade-in">
+            {items.map((item: any) => (
               <li key={item.name} className="list-none">
                 <MangaCardRef
                   title={item.name}
@@ -119,9 +106,9 @@ export default function Home() {
                   hot={false}
                 />
               </li>
-            ))
-          )}
-        </ul>
+            ))}
+          </ul>
+        </>
       )}
       {/* Pagination */}
       {totalPages > 1 && !loading && (
