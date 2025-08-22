@@ -12,24 +12,45 @@ interface BookmarkEntry {
 export default function BookmarkPage(){
   const [items, setItems] = useState<BookmarkEntry[]>([]);
   const [mounted, setMounted] = useState(false);
+  const STORAGE_KEYS = ['bookmarks:v1', 'bookmarks'];
+
+  const load = () => {
+    try {
+      let found: BookmarkEntry[] = [];
+      for(const k of STORAGE_KEYS){
+        const raw = localStorage.getItem(k);
+        if(!raw) continue;
+        try {
+          const arr = JSON.parse(raw);
+          if(Array.isArray(arr)){
+            found = arr as BookmarkEntry[];
+            break;
+          }
+        } catch {}
+      }
+      if(found.length){
+        const seen = new Set<string>();
+        const dedup: BookmarkEntry[] = [];
+        for(const e of found){ if(e && e.name && !seen.has(e.name)){ seen.add(e.name); dedup.push(e);} }
+        dedup.sort((a,b)=> (b.addedAt||0) - (a.addedAt||0));
+        setItems(dedup);
+      } else {
+        setItems([]);
+      }
+    } catch { setItems([]); }
+  };
 
   useEffect(()=>{
     setMounted(true);
-    try {
-      const raw = localStorage.getItem('bookmarks:v1');
-      if(raw){
-        const arr: BookmarkEntry[] = JSON.parse(raw);
-        if(Array.isArray(arr)){
-          // Deduplicate by name
-            const seen = new Set<string>();
-            const dedup: BookmarkEntry[] = [];
-            for(const e of arr){ if(!seen.has(e.name)){ seen.add(e.name); dedup.push(e);} }
-            // newest first
-            dedup.sort((a,b)=> b.addedAt - a.addedAt);
-            setItems(dedup);
-        }
-      }
-    } catch {}
+    load();
+    const onVis = () => { if(document.visibilityState==='visible') load(); };
+    const onStorage = (e: StorageEvent) => { if(STORAGE_KEYS.includes(e.key||'')) load(); };
+    document.addEventListener('visibilitychange', onVis);
+    window.addEventListener('storage', onStorage);
+    return () => {
+      document.removeEventListener('visibilitychange', onVis);
+      window.removeEventListener('storage', onStorage);
+    };
   },[]);
 
   const removeOne = (name: string) => {
@@ -48,7 +69,10 @@ export default function BookmarkPage(){
     <main className="container-page max-w-5xl mx-auto py-10">
       <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-6">Bookmarks</h1>
       {items.length===0 && (
-        <div className="text-sm text-[var(--color-text-dim)] border border-[var(--color-border)] rounded-lg p-6 bg-[var(--color-bg-alt)]">No bookmarks yet. Visit a series detail page and press the bookmark icon.</div>
+        <div className="text-sm text-[var(--color-text-dim)] border border-[var(--color-border)] rounded-lg p-6 bg-[var(--color-bg-alt)] flex items-center justify-between gap-4">
+          <span>No bookmarks yet. Visit a series detail page and press the bookmark icon.</span>
+          <button onClick={load} className="px-3 py-1.5 rounded-md text-xs font-medium bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)]">Refresh</button>
+        </div>
       )}
       {items.length>0 && (
         <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">

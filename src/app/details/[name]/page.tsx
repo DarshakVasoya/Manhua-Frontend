@@ -25,7 +25,24 @@ export default function DetailsPage(){
   const [descExpanded, setDescExpanded] = useState(false);
   // Client-side pagination (no URL params)
   const [page, setPage] = useState(1);
-  const pageSize = 48; // chapters per page
+  // const pageSize = 20; // chapters per page
+   const ROWS_PER_PAGE = 10;
+  const [cols, setCols] = useState(1);
+  useEffect(() => {
+    const calcCols = () => {
+      const w = window.innerWidth || 0;
+      // Tailwind breakpoints: sm:640, md:768, lg:1024
+      setCols(w >= 1024 ? 4 : w >= 768 ? 3 : w >= 640 ? 2 : 1);
+    };
+    calcCols();
+    window.addEventListener('resize', calcCols, { passive: true } as any);
+    window.addEventListener('orientationchange', calcCols, { passive: true } as any);
+    return () => {
+      window.removeEventListener('resize', calcCols as any);
+      window.removeEventListener('orientationchange', calcCols as any);
+    };
+  }, []);
+  const pageSize = ROWS_PER_PAGE * cols;
 
   useEffect(() => {
     if(!decoded) return;
@@ -322,9 +339,13 @@ export default function DetailsPage(){
             <h2 className="text-lg font-semibold">Chapters <span className="text-[var(--color-text-dim)] font-normal">({chapters.length})</span></h2>
             {renderPagination()}
           </div>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-            {pageChapters.map((ch,i) => (
-              <a key={`${ch.chapter_number}-${ch.rawLabel || i}`} href={`/details/${encodeURIComponent(decoded)}/chapters/${ch.chapter_number}`} className="px-3 py-2 rounded-md bg-[var(--color-surface)] border border-[var(--color-border)] text-xs flex flex-col gap-0.5 hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)]/10 transition group">
+         <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+            {pageChapters.map((ch: any, idx: number) => (
+              <a
+                key={ch.chapter_number}
+                href={`/details/${encodeURIComponent(decoded)}/chapters/${ch.chapter_number}`}
+                className="h-10 px-3 rounded-md bg-[var(--color-surface)] border border-[var(--color-border)] text-xs flex items-center justify-between hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)]/10 transition group relative"
+              >
                 <div className="flex items-center justify-between w-full">
                   <span className="font-medium group-hover:text-white">Chapter {ch.chapter_number}</span>
                   {ch.date && <span className="text-[10px] text-[var(--color-text-dim)] ml-3 whitespace-nowrap">{ch.date}</span>}

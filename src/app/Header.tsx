@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { usePathname } from 'next/navigation';
+import SearchBar from "../components/SearchBar";
+
 
 export interface Category { label: string; slug?: string; }
 export const headerCategories: Category[] = [];
@@ -74,8 +76,8 @@ export default function Header() {
 
   return (
   <div className={`sticky top-0 z-40 backdrop-blur border-b border-[var(--color-border)] transition-transform duration-300 ease-out will-change-transform ${mounted ? (hidden ? '-translate-y-full opacity-0' : 'translate-y-0') : 'translate-y-0'} `} style={{background: 'var(--color-header-backdrop)'}}>
-  <div className="container-page flex items-center gap-4 pt-3 pb-2">
-        <a href="/" className="flex items-center gap-2 group" aria-label="Go to homepage">
+  <div className="container-page flex items-center gap-4 pt-3 pb-2 min-w-0">
+       <a href="/" className="flex items-center gap-2 group" aria-label="Go to homepage">
           {/* Two logos; show/hide via data-theme attribute */}
           <img
             src="/manhwagalaxy-logo-2.svg"
@@ -95,17 +97,11 @@ export default function Header() {
           <a href="/bookmark" className="text-sm font-semibold text-[var(--color-text-dim)] hover:text-[var(--color-text)]">Bookmark</a>
         </nav>
         {/* Global search */}
-        <form
-          onSubmit={e=>{e.preventDefault(); const q=(e.currentTarget.elements.namedItem('q') as HTMLInputElement).value.trim(); if(q) window.location.href=`/search?query=${encodeURIComponent(q)}`; }}
-          className="hidden sm:flex items-center ml-auto bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md overflow-hidden focus-within:border-[var(--color-accent)] transition w-[200px] md:w-[240px] lg:w-[260px]"
-          role="search"
-          aria-label="Global search"
-        >
-          <input name="q" type="text" placeholder="Search..." className="bg-transparent px-3 py-2 text-sm flex-1 outline-none" />
-          <button type="submit" className="px-3 py-2 text-xs font-semibold text-[var(--color-text-dim)] hover:text-[var(--color-text)]">Go</button>
-        </form>
-  <div className="ml-auto flex items-center gap-2">
-      <button
+      <SearchBar className="flex flex-1 min-w-0 max-w-full sm:max-w-[180px] md:max-w-[240px] lg:max-w-[320px] mr-2" />
+     
+   {/* On mobile, push controls to the right; on ≥sm, search takes ml-auto */}
+    <div className="ml-auto flex items-center gap-2 shrink-0">
+                  <button
             type="button"
             onClick={toggleTheme}
             aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}

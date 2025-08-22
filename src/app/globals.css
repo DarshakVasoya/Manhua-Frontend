@@ -83,6 +83,15 @@ img[data-logo='dark'] { display:none; }
 html[data-theme='dark'] img[data-logo='dark'] { display:inline-block; }
 html[data-theme='dark'] img[data-logo='light'] { display:none; }
 
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+	*, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+}
+
+/* Safe area support for devices with notches */
+:root { --safe-top: env(safe-area-inset-top); --safe-bottom: env(safe-area-inset-bottom); }
+body { padding-top: max(0px, var(--safe-top, 0)); padding-bottom: max(0px, var(--safe-bottom, 0)); }
+
 /* Category strip */
 .category-strip { position:relative; }
 .cat-scroll { display:flex; overflow-x:auto; scrollbar-width:none; -ms-overflow-style:none; padding:0.25rem 0; justify-content:center; }
@@ -114,4 +123,29 @@ html[data-theme='light'] .pill-cat.active { box-shadow:0 2px 10px -1px rgba(0,0,
 .category-strip::after { right:0; background:linear-gradient(to left, var(--color-bg) 0%, rgba(0,0,0,0)); }
 html[data-theme='light'] .category-strip::before { background:linear-gradient(to right, var(--color-bg) 0%, rgba(255,255,255,0)); }
 html[data-theme='light'] .category-strip::after { background:linear-gradient(to left, var(--color-bg) 0%, rgba(255,255,255,0)); }
+
+
+/* Chapters list: responsive item cap (no scrollbar) */
+/* Base: show first 6 items */
+.chapters-list > a:nth-child(n+7) { display: none; }
+/* sm >= 640px: show first 8 */
+@media (min-width: 640px) {
+	.chapters-list > a { display: block; }
+	.chapters-list > a:nth-child(n+9) { display: none; }
+}
+/* md >= 768px: show first 12 */
+@media (min-width: 768px) {
+	.chapters-list > a { display: block; }
+	.chapters-list > a:nth-child(n+13) { display: none; }
+}
+/* lg >= 1024px: show first 16 */
+@media (min-width: 1024px) {
+	.chapters-list > a { display: block; }
+	.chapters-list > a:nth-child(n+17) { display: none; }
+}
+/* xl >= 1280px: show first 20 */
+@media (min-width: 1280px) {
+	.chapters-list > a { display: block; }
+	.chapters-list > a:nth-child(n+21) { display: none; }
+}
 

@@ -315,7 +315,7 @@ export default function ChapterNumberOnly() {
         {!chapterLoading && !chapterError && chapterImages.length === 0 && (
           <div className="text-xs text-[var(--color-text-dim)] py-6 text-center">No images available.</div>
         )}
-        <div className="flex flex-col items-center gap-4">
+  <div className="flex flex-col items-center gap-0">
           {chapterImages.slice(0, visibleCount).map((origSrc, idx)=>{
             const src = overrideSrc[idx] || origSrc;
             const isTrigger = idx === Math.min(visibleCount, chapterImages.length) - 2 && visibleCount < chapterImages.length; // 4th, 9th, etc.
@@ -328,7 +328,7 @@ export default function ChapterNumberOnly() {
             };
             return (
               <div key={idx} className="w-full max-w-3xl flex flex-col items-center">
-                <div className={`relative w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden`}>
+                <div className={`relative w-full overflow-hidden`}>
                   {!loaded && !hadError && (
                     <div className="w-full h-[600px] max-h-[90vh] shimmer flex items-center justify-center text-[10px] text-[var(--color-text-dim)]">Loading image…</div>
                   )}
@@ -353,7 +353,6 @@ export default function ChapterNumberOnly() {
                     style={{ WebkitUserDrag:'none' }}
                   />
                 </div>
-                <div className="mt-1 text-[10px] text-[var(--color-text-dim)]">Page {idx+1}</div>
               </div>
             );
           })}

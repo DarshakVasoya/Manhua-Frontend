@@ -31,8 +31,27 @@ const MangaCardRef: React.FC<MangaCardRefProps> = ({
   hot = false,
 }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
-  const displayChapters = chapters.length > 0 ? chapters.slice(0,2) : (lastChapter ? [{ number: lastChapter, url: mangaUrl + '#chapter-' + lastChapter }] : []);
-  const formatChapterLabel = (raw: number | string) => {
+
+
+    // Build chapter URL from the details page URL
+  const detailsBase = mangaUrl.replace(/\/+$/, '');
+ const makeChapterUrl = (num: number | string) => {
+  const cleanNum = String(num).replace(/^Chapter\s*/i, '').replace(/\s+/g, '');
+  return `${detailsBase}/chapters/${encodeURIComponent(cleanNum)}`;
+};
+
+
+    const displayChapters =
+    chapters.length > 0
+      ? chapters.slice(0, 2) // keep original numbers/times
+      : lastChapter != null
+      // fallback chip for lastChapter that links to chapter page instead of details hash
+      ? [{ number: lastChapter, url: makeChapterUrl(lastChapter) }]
+      : [];  
+      
+      
+      
+      const formatChapterLabel = (raw: number | string) => {
     const s = String(raw).trim();
     // If already starts with 'chapter' keep it as single instance (normalize capitalization)
     if (/^chapter\b/i.test(s)) {
@@ -61,10 +80,15 @@ const MangaCardRef: React.FC<MangaCardRefProps> = ({
         </Link>
         <div className={styles.bigor}>
           <Link href={mangaUrl} className={styles.tt} title={title}>{title}</Link>
-          {displayChapters.length > 0 && (
+      {displayChapters.length > 0 && (
             <div className={styles.chfiv}>
               {displayChapters.map((ch, i) => (
-                <Link href={ch.url} key={i} className={styles.ephiv} title={formatChapterLabel(ch.number)}>
+                <Link
+                  key={i}
+                  href={makeChapterUrl(ch.number)} // force chapter page URL
+                  className={styles.ephiv}
+                  title={formatChapterLabel(ch.number)}
+                >
                   <span className={styles.fivchap}>{formatChapterLabel(ch.number)}</span>
                   <span className={styles.metaWrap}>
                     {postedOn && i === 0 && <span className={styles.fivtime}>{postedOn}</span>}
