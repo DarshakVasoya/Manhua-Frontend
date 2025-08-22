@@ -60,6 +60,11 @@ export default function RootLayout({
           <div className="container-page flex flex-col gap-2">
             <p>&copy; {new Date().getFullYear()} ManhwaGalaxy. Unofficial fan site.</p>
             <p className="opacity-70">Data provided for preview & educational purposes only.</p>
+            <div className="flex justify-center gap-4 mt-2">
+              <a href="/terms" className="underline hover:text-white">Terms of Service</a>
+              <a href="/privacy" className="underline hover:text-white">Privacy Policy</a>
+              <a href="/dmca" className="underline hover:text-white">DMCA Policy</a>
+            </div>
           </div>
         </footer>
         <div id="scrollTopBtn" aria-hidden="true">

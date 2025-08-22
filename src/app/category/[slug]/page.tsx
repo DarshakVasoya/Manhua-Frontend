@@ -1,4 +1,5 @@
-'use client';
+
+"use client";
 import React, { useEffect, useState } from 'react';
 import { usePathname, useRouter, useParams } from 'next/navigation';
 import MangaCardRef from '@/components/MangaCardRef';
@@ -7,11 +8,22 @@ import SubHeader from '@/components/SubHeader';
 const API_BASE = 'http://165.232.60.4:8000/manhwa';
 
 export default function CategoryPage() {
-  const { slug } = useParams<{ slug: string }>();
-  const raw = slug || '';
-  const category = decodeURIComponent(raw);
+ const { slug } = useParams<{ slug: string }>();
+ // Only define 'category' once
+ const category = decodeURIComponent(slug || '');
   const router = useRouter();
   const pathname = usePathname();
+  React.useEffect(() => {
+    document.title = `${category} Manga - Read ${category} Manhwa Online | ManhwaGalaxy`;
+    let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
+    if (!meta) {
+      meta = document.createElement('meta') as HTMLMetaElement;
+      meta.name = "description";
+      document.head.appendChild(meta);
+    }
+    meta.content = `Browse and read the latest ${category} manhwa chapters online for free at ManhwaGalaxy. Discover new releases and bookmark your favorites.`;
+  }, [category]);
+ 
   // Redirect special values back to home (client side)
   useEffect(() => {
     if (category === 'All Manga' || category === 'Latest') {
@@ -102,10 +114,16 @@ export default function CategoryPage() {
       {category && category !== 'Latest' && category !== 'All Manga' && (
         <h2 className="text-sm font-semibold mb-4 text-[var(--color-text-dim)]">Genre: <span className="text-[var(--color-text)]">{category}</span></h2>
       )}
-      {error && (
-        <div className="mb-4 text-sm text-red-400">{error}</div>
-      )}
-      {loading ? (
+      {error ? (
+        <div className="mb-6 p-4 rounded-lg border border-red-400 bg-red-50 text-red-700 flex flex-col items-center">
+          <span className="font-semibold text-base mb-2">Oops! Something went wrong.</span>
+          <span className="mb-3">{error}</span>
+          <button
+            onClick={() => { setError(null); setLoading(true); setPage(1); }}
+            className="px-4 py-2 rounded bg-[var(--color-accent)] text-white font-medium hover:bg-[var(--color-accent-hover)] transition"
+          >Retry</button>
+        </div>
+      ) : loading ? (
         renderSkeletons()
       ) : (
         <ul className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 fade-in">
@@ -125,7 +143,7 @@ export default function CategoryPage() {
           ))}
         </ul>
       )}
-      {totalPages > 1 && !loading && (
+      {totalPages > 1 && !loading && !error && (
         <div className="flex flex-wrap justify-center items-center gap-2 py-10">
           <button
             onClick={() => setPage(1)}

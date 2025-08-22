@@ -1,4 +1,7 @@
-import React from "react";
+
+"use client";
+import React, { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import MangaGrid from "../../components/MangaGrid";
 
 const API = "http://165.232.60.4:8000/manhwa/search";
@@ -10,34 +13,52 @@ const genresOf = (it: any): string[] =>
     ? it.genre.split(",").map((s: string) => s.trim()).filter(Boolean)
     : [];
 
-export default async function SearchPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
-  const params = await searchParams;
-  const q = (Array.isArray(params?.query) ? params.query[0] : params?.query) || "";
-  const page = Number(Array.isArray(params?.page) ? params.page[0] : params?.page) || 1;
+export default function SearchPage() {
+  const searchParams = useSearchParams();
+  const q = (searchParams.get("query") || "").trim();
+  const page = Number(searchParams.get("page") || 1);
   const limit = 24;
 
-  let list: any[] = [];
-  let error: string | null = null;
+  const [list, setList] = useState<any[]>([]);
+  const [genres, setGenres] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  if (q.trim()) {
-    try {
-      const url = `${API}?query=${encodeURIComponent(q.trim())}&page=${page}&limit=${limit}`;
-      const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) throw new Error(String(res.status));
-      const json = await res.json();
-      list = Array.isArray(json) ? json : (Array.isArray(json?.results) ? json.results : []);
-    } catch {
-      error = "Failed to fetch search results.";
+  useEffect(() => {
+    document.title = "Search | ManhwaGalaxy";
+    let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
+    if (!meta) {
+      meta = document.createElement('meta') as HTMLMetaElement;
+      meta.name = "description";
+      document.head.appendChild(meta);
     }
-  }
+    meta.content = "Search for your favorite manhwa series and chapters on ManhwaGalaxy.";
+  }, []);
 
+  useEffect(() => {
+    if (!q) {
+      setList([]);
+      setGenres([]);
+      setError(null);
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    fetch(`${API}?query=${encodeURIComponent(q)}&page=${page}&limit=${limit}`)
+      .then((res) => {
+        if (!res.ok) throw new Error(String(res.status));
+        return res.json();
+      })
+      .then((json) => {
+  const items: any[] = Array.isArray(json) ? json : Array.isArray(json?.results) ? json.results : [];
+  setList(items);
   const genreSet = new Set<string>();
-  list.forEach((it) => genresOf(it).forEach((g) => genreSet.add(g)));
-  const genres = Array.from(genreSet).sort((a, b) => a.localeCompare(b));
+  items.forEach((it: any) => genresOf(it).forEach((g: string) => genreSet.add(g)));
+  setGenres(Array.from(genreSet).sort((a, b) => a.localeCompare(b)));
+      })
+      .catch(() => setError("Failed to fetch search results."))
+      .finally(() => setLoading(false));
+  }, [q, page]);
 
   const hasPrev = page > 1;
   const hasNext = list.length >= limit;
@@ -45,16 +66,30 @@ export default async function SearchPage({
   return (
     <main className="container-page max-w-5xl mx-auto py-6">
       <h1 className="text-xl md:text-2xl font-bold tracking-tight mb-3">
-        Search results for “{q || "…"}”
+        Search results for &ldquo;{q || "..."}&rdquo;
       </h1>
 
-      {error && <div className="text-sm text-red-400 mb-6">{error}</div>}
+      {error ? (
+        <div className="mb-6 p-4 rounded-lg border border-red-400 bg-red-50 text-red-700 flex flex-col items-center">
+          <span className="font-semibold text-base mb-2">Oops! Something went wrong.</span>
+          <span className="mb-3">{error}</span>
+          <button
+            onClick={() => {
+              setError(null);
+              setLoading(true);
+              setList([]);
+              setGenres([]);
+            }}
+            className="px-4 py-2 rounded bg-[var(--color-accent)] text-white font-medium hover:bg-[var(--color-accent-hover)] transition"
+          >Retry</button>
+        </div>
+      ) : null}
 
-      {!q.trim() && (
+      {!q && (
         <div className="text-sm text-[var(--color-text-dim)]">Type a search above and press Go.</div>
       )}
 
-      {q.trim() && genres.length > 0 && (
+      {q && genres.length > 0 && (
         <div className="mb-4 flex flex-wrap gap-2">
           {genres.map((g) => (
             <span
@@ -67,13 +102,15 @@ export default async function SearchPage({
         </div>
       )}
 
-      {q.trim() && list.length === 0 && !error && (
+      {q && list.length === 0 && !error && !loading && (
         <div className="text-sm text-[var(--color-text-dim)]">No results found.</div>
       )}
 
-      {list.length > 0 && <MangaGrid items={list} />}
+      {loading ? (
+        <div className="text-sm text-[var(--color-text-dim)]">Loading…</div>
+      ) : list.length > 0 && <MangaGrid items={list} />}
 
-         {list.length > 0 && (
+      {list.length > 0 && (
         <div className="flex items-center justify-between gap-2 mt-6">
           <a
             href={`/search?query=${encodeURIComponent(q)}&page=${Math.max(1, page - 1)}`}
@@ -95,3 +132,4 @@ export default async function SearchPage({
     </main>
   );
 }
+// ...existing code...

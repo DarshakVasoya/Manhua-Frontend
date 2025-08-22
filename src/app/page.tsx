@@ -1,4 +1,5 @@
-'use client';
+"use client";
+
 import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import MangaCardRef from '@/components/MangaCardRef';
@@ -7,6 +8,16 @@ import SubHeader from '@/components/SubHeader';
 const API_BASE = 'http://165.232.60.4:8000/manhwa';
 
 export default function Home() {
+  React.useEffect(() => {
+    document.title = "ManhwaGalaxy - Read Free Manhwa Online";
+    let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
+    if (!meta) {
+      meta = document.createElement('meta') as HTMLMetaElement;
+      meta.name = "description";
+      document.head.appendChild(meta);
+    }
+    meta.content = "Discover and read the latest manhwa chapters online for free at ManhwaGalaxy. Browse genres, bookmark favorites, and stay updated with new releases.";
+  }, []);
   const PAGE_SIZE = 24;
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -85,10 +96,16 @@ export default function Home() {
       <div className="mb-5">
         <SubHeader />
       </div>
-      {error && (
-        <div className="mb-4 text-sm text-red-400">{error}</div>
-      )}
-      {loading ? (
+      {error ? (
+        <div className="mb-6 p-4 rounded-lg border border-red-400 bg-red-50 text-red-700 flex flex-col items-center">
+          <span className="font-semibold text-base mb-2">Oops! Something went wrong.</span>
+          <span className="mb-3">{error}</span>
+          <button
+            onClick={() => { setError(null); setLoading(true); setPage(1); }}
+            className="px-4 py-2 rounded bg-[var(--color-accent)] text-white font-medium hover:bg-[var(--color-accent-hover)] transition"
+          >Retry</button>
+        </div>
+      ) : loading ? (
         renderSkeletons()
       ) : (
         <>
@@ -111,7 +128,7 @@ export default function Home() {
         </>
       )}
       {/* Pagination */}
-      {totalPages > 1 && !loading && (
+      {totalPages > 1 && !loading && !error && (
         <div className="flex flex-wrap justify-center items-center gap-2 py-10">
           <button
             onClick={() => setPage(1)}

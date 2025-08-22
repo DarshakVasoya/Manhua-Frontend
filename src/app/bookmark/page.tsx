@@ -1,5 +1,8 @@
-'use client';
+
+
+"use client";
 import React, { useEffect, useState } from 'react';
+
 
 interface BookmarkEntry {
   name: string;
@@ -12,6 +15,7 @@ interface BookmarkEntry {
 export default function BookmarkPage(){
   const [items, setItems] = useState<BookmarkEntry[]>([]);
   const [mounted, setMounted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const STORAGE_KEYS = ['bookmarks:v1', 'bookmarks'];
 
   const load = () => {
@@ -34,10 +38,15 @@ export default function BookmarkPage(){
         for(const e of found){ if(e && e.name && !seen.has(e.name)){ seen.add(e.name); dedup.push(e);} }
         dedup.sort((a,b)=> (b.addedAt||0) - (a.addedAt||0));
         setItems(dedup);
+        setError(null);
       } else {
         setItems([]);
+        setError(null);
       }
-    } catch { setItems([]); }
+    } catch {
+      setItems([]);
+      setError('Failed to load bookmarks. Please try again.');
+    }
   };
 
   useEffect(()=>{
@@ -70,6 +79,16 @@ export default function BookmarkPage(){
       <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-6">Bookmarks</h1>
       {items.length===0 && (
         <div className="text-sm text-[var(--color-text-dim)] border border-[var(--color-border)] rounded-lg p-6 bg-[var(--color-bg-alt)] flex items-center justify-between gap-4">
+        {error && (
+          <div className="mb-6 p-4 rounded-lg border border-red-400 bg-red-50 text-red-700 flex flex-col items-center">
+            <span className="font-semibold text-base mb-2">Oops! Something went wrong.</span>
+            <span className="mb-3">{error}</span>
+            <button
+              onClick={load}
+              className="px-4 py-2 rounded bg-[var(--color-accent)] text-white font-medium hover:bg-[var(--color-accent-hover)] transition"
+            >Retry</button>
+          </div>
+        )}
           <span>No bookmarks yet. Visit a series detail page and press the bookmark icon.</span>
           <button onClick={load} className="px-3 py-1.5 rounded-md text-xs font-medium bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)]">Refresh</button>
         </div>

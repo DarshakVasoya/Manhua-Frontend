@@ -1,5 +1,7 @@
 "use client";
 import React, { useEffect, useState, useMemo } from 'react';
+
+
 import { useParams, useRouter } from 'next/navigation';
 
 // Minimal view with breadcrumb and chapter number.
@@ -12,12 +14,24 @@ if(!(globalThis as any).__chapterImageCache){
 }
 
 export default function ChapterNumberOnly() {
+  // ...existing code...
   const params = useParams();
   const router = useRouter();
   const rawName = params?.name as string | string[] | undefined;
   const chapter_number = params?.chapter_number as string;
   const nameJoined = Array.isArray(rawName) ? rawName.join('/') : (rawName || '');
   const decoded = decodeURIComponent(nameJoined);
+
+  useEffect(() => {
+    document.title = `${decoded} - Chapter ${chapter_number} | ManhwaGalaxy`;
+    let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
+    if (!meta) {
+      meta = document.createElement('meta') as HTMLMetaElement;
+      meta.name = "description";
+      document.head.appendChild(meta);
+    }
+    meta.content = `Read ${decoded} Chapter ${chapter_number} online at ManhwaGalaxy. Stay updated with the latest chapters.`;
+  }, [decoded, chapter_number]);
 
   // Chapter list state (lightweight)
   interface ChapterMeta { chapter_number: string|number; rawLabel?: string; }

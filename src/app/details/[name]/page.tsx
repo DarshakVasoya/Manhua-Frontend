@@ -1,7 +1,6 @@
-'use client';
+"use client";
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'next/navigation';
-
 const API_BASE = 'http://165.232.60.4:8000/manhwa';
 
 interface Chapter { 
@@ -16,7 +15,22 @@ export default function DetailsPage(){
   const params = useParams();
   const raw = (params?.name as any);
   const name = Array.isArray(raw) ? raw.join('/') : raw;
+  // Only define 'decoded' once
   const decoded = decodeURIComponent(name || '');
+  React.useEffect(() => {
+    document.title = `${decoded} | ManhwaGalaxy`;
+    let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
+    if (!meta) {
+      meta = document.createElement('meta') as HTMLMetaElement;
+      meta.name = "description";
+      document.head.appendChild(meta);
+    }
+    meta.content = `Read ${decoded} manga online at ManhwaGalaxy. Discover chapters, bookmark your favorites, and stay updated with the latest releases.`;
+  }, [decoded]);
+ 
+
+
+  
   const [details, setDetails] = useState<any>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [loading, setLoading] = useState(true);
@@ -224,9 +238,16 @@ export default function DetailsPage(){
         <span>/</span>
         <span className="truncate max-w-[320px]" title={decoded}>{decoded}</span>
       </nav>
-      {!loading && error && (
-        <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-6 text-sm text-red-400">{error}</div>
-      )}
+      {!loading && error ? (
+        <div className="mb-6 p-4 rounded-lg border border-red-400 bg-red-50 text-red-700 flex flex-col items-center">
+          <span className="font-semibold text-base mb-2">Oops! Something went wrong.</span>
+          <span className="mb-3">{error}</span>
+          <button
+            onClick={() => { setError(null); setLoading(true); setPage(1); }}
+            className="px-4 py-2 rounded bg-[var(--color-accent)] text-white font-medium hover:bg-[var(--color-accent-hover)] transition"
+          >Retry</button>
+        </div>
+      ) : null}
       <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-5">{decoded}</h1>
       {loading && (
         <div className="grid md:grid-cols-[220px_1fr] gap-8 mb-10">
