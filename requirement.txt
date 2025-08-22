@@ -1,0 +1,19 @@
+Manhwa Frontend - Requirements
+
+- Node.js >= 18.18 (20.x LTS recommended)
+- npm >= 9 (10+ recommended)
+- Next.js 15.5.0
+- React 18
+- TypeScript 5.x
+- Tailwind CSS 3.x
+
+Environment:
+- Create .env.local with:
+  NEXT_PUBLIC_API_BASE_URL=http://165.232.60.4:8000
+
+Install:
+- npm ci
+
+Run:
+- npm run dev
+- npm run build && npm run start
