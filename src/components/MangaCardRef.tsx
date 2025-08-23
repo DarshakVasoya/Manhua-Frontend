@@ -102,8 +102,16 @@ const MangaCardRef: React.FC<MangaCardRefProps> = ({
                 >
                   <span className={styles.fivchap}>{formatChapterLabel(ch.number)}</span>
                   <span className={styles.metaWrap}>
-                    {postedOn && i === 0 && <span className={styles.fivtime}>{postedOn}</span>}
-                    {ch.time && <span className={styles.fivtime}>{ch.time}</span>}
+                    {postedOn && i === 0 && ch.time ? (
+                      <>
+                        <span className={styles.fivtime}>{postedOn}</span>
+                        <span className={styles.fivtime} style={{ fontSize: '0.8em', marginLeft: 6 }}>{ch.time}</span>
+                      </>
+                    ) : postedOn && i === 0 ? (
+                      <span className={styles.fivtime}>{postedOn}</span>
+                    ) : ch.time ? (
+                      <span className={styles.fivtime}>{ch.time}</span>
+                    ) : null}
                   </span>
                 </Link>
               ))}

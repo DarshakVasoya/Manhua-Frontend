@@ -75,6 +75,11 @@ export default function SearchClient() {
 
   return (
     <main className="container-page max-w-5xl mx-auto py-6">
+      {q && (
+        <div className="mb-4 text-lg font-semibold text-[var(--color-accent)]">
+          Showing results for: <span className="font-bold">{q}</span>
+        </div>
+      )}
       {loading && <div>Loading…</div>}
       {q && list.length === 0 && showNoResults && <div>No results found.</div>}
       {list.length > 0 && <MangaGrid items={list.map(item => ({ ...item }))} />}
