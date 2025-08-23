@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useMemo } from 'react';
-
+import Link from "next/link"
 
 import { useParams, useRouter } from 'next/navigation';
 
@@ -8,9 +8,19 @@ import { useParams, useRouter } from 'next/navigation';
 // Simple in-memory cache for chapter image data across navigations
 // Key: `${seriesName}__${chapterNumber}`
 interface CachedChapterData { images: string[]; date?: string; label?: string; }
-const chapterImageCache: Record<string, CachedChapterData> = (globalThis as any).__chapterImageCache || {};
-if(!(globalThis as any).__chapterImageCache){
-  (globalThis as any).__chapterImageCache = chapterImageCache;
+interface ChapterMeta {
+  chapter_number: string | number;
+  chapternum?: string | number;
+  chapter?: string | number;
+  rawLabel?: string;
+}
+declare global {
+  var __chapterImageCache: Record<string, CachedChapterData> | undefined;
+  var __chapterListCache: Record<string, ChapterMeta[]> | undefined;
+}
+const chapterImageCache: Record<string, CachedChapterData> = globalThis.__chapterImageCache || {};
+if(!globalThis.__chapterImageCache){
+  globalThis.__chapterImageCache = chapterImageCache;
 }
 
 export default function ChapterNumberOnly() {
@@ -34,12 +44,17 @@ export default function ChapterNumberOnly() {
   }, [decoded, chapter_number]);
 
   // Chapter list state (lightweight)
-  interface ChapterMeta { chapter_number: string|number; rawLabel?: string; }
+  interface ChapterMeta {
+    chapter_number: string | number;
+    chapternum?: string | number;
+    chapter?: string | number;
+    rawLabel?: string;
+  }
   const [chapters, setChapters] = useState<ChapterMeta[]>([]);
   const [loadingChapters, setLoadingChapters] = useState(false);
   // Cache chapter list per series name (in-memory)
-  const chapterListCache: Record<string, ChapterMeta[]> = (globalThis as any).__chapterListCache || {};
-  if(!(globalThis as any).__chapterListCache){ (globalThis as any).__chapterListCache = chapterListCache; }
+  const chapterListCache: Record<string, ChapterMeta[]> = globalThis.__chapterListCache || {};
+  if(!globalThis.__chapterListCache){ globalThis.__chapterListCache = chapterListCache; }
 
   // Generate name variants (same logic used elsewhere) for resilience
   const genNameVariants = (base: string): string[] => {
@@ -81,12 +96,12 @@ export default function ChapterNumberOnly() {
           const data = await r.json();
           if(Array.isArray(data)){
             // Normalize numeric
-            let mapped: ChapterMeta[] = data.map((c:any, idx:number)=>{
-              const rawLabel = c.chapternum || c.chapter || c.chapter_number || `Chapter ${idx+1}`;
-              const numMatch = /([0-9]+(?:\.[0-9]+)?)/.exec(rawLabel);
-              const parsedNum = numMatch ? numMatch[1] : (c.chapter_number ?? idx+1);
-              return { chapter_number: parsedNum, rawLabel };
-            });
+              const mapped: ChapterMeta[] = data.map((c:ChapterMeta, idx:number)=>{
+                const rawLabel = String(c.chapternum || c.chapter || c.chapter_number || `Chapter ${idx+1}`);
+                const numMatch = /([0-9]+(?:\.[0-9]+)?)/.exec(rawLabel);
+                const parsedNum = numMatch ? numMatch[1] : String(c.chapter_number ?? idx+1);
+                return { chapter_number: parsedNum, rawLabel };
+              });
             // Sort ascending
             mapped.sort((a,b)=>{
               const an = parseFloat(String(a.chapter_number));
@@ -159,7 +174,7 @@ export default function ChapterNumberOnly() {
   endpoints.push(`https://api.manhwagalaxy.org/manhwa/${enc}/chapters/${chapter_number}`);
     });
     (async()=>{
-      let lastErr: any = null;
+  let lastErr: string | number | Error | null = null;
       for(const url of endpoints){
         try {
           const r = await fetch(url);
@@ -174,7 +189,7 @@ export default function ChapterNumberOnly() {
             setChapterLoading(false);
             return;
           }
-        } catch(e){ lastErr = e; }
+  } catch(e){ lastErr = e as Error; }
       }
       if(active){ setChapterError('Failed to load chapter images'); setChapterLoading(false); }
     })();
@@ -299,7 +314,9 @@ export default function ChapterNumberOnly() {
   return (
     <main className="container-page max-w-4xl mx-auto py-10">
       <nav className="text-xs mb-6 text-[var(--color-text-dim)] flex gap-1 items-center">
-        <a href="/" className="hover:text-white">Home</a>
+       <Link href="/" className="hover:text-white">
+  Home
+</Link>
         <span>/</span>
         <a href={`/details/${encodeURIComponent(decoded)}`} className="hover:text-white truncate max-w-[240px]" title={decoded}>{decoded}</a>
       </nav>
@@ -354,13 +371,13 @@ export default function ChapterNumberOnly() {
                     src={src}
                     alt={`${chapterNumLabel} page ${idx+1}`}
                     loading={idx===0 ? 'eager' : 'lazy'}
-                    {...(idx===0 ? { fetchPriority: 'high' as any } : {})}
+                    {...(idx===0 ? { fetchPriority: 'high' as const } : {})}
                     decoding="async"
                     onLoad={() => setLoadedMap(m => ({...m, [idx]: true}))}
                     onError={() => setErrorMap(m => ({...m, [idx]: (m[idx]||0)+1 }))}
                     className={`w-full h-auto object-contain select-none transition-opacity duration-500 ease-out ${loaded ? 'opacity-100' : 'opacity-0'} ${hadError ? 'hidden' : ''}`}
-                    // @ts-ignore vendor style
-                    style={{ WebkitUserDrag:'none' }}
+                    // @ts-expect-error vendor style
+style={{ WebkitUserDrag: 'none' }}
                   />
                 </div>
               </div>

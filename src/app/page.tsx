@@ -15,7 +15,7 @@ interface MangaItem {
   [key: string]: unknown;
 }
 import Link from "next/link";
-import Image from "next/image";
+
 import { usePathname } from 'next/navigation';
 import MangaCardRef from '@/components/MangaCardRef';
 import SubHeader from '@/components/SubHeader';

@@ -29,8 +29,8 @@ export default function TermsPage() {
       </section>
       <section className="mb-6">
         <h2 className="text-lg font-semibold mb-2">4. Disclaimer</h2>
-        <p>ManhwaGalaxy provides content "as is" without warranties of any kind. We do not guarantee the accuracy, completeness, or availability of any content.</p>
-      </section>
+    <p>ManhwaGalaxy provides content &quot;as is&quot; without warranties of any kind. We do not guarantee the accuracy, completeness, or availability of any content.</p>
+   </section>
       <section className="mb-6">
         <h2 className="text-lg font-semibold mb-2">5. Changes to Terms</h2>
         <p>We reserve the right to update these Terms of Service at any time. Changes will be posted on this page and are effective immediately upon posting.</p>

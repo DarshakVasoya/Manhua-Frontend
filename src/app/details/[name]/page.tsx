@@ -74,12 +74,14 @@ export default function DetailsPage(){
       setCols(w >= 1024 ? 4 : w >= 768 ? 3 : w >= 640 ? 2 : 1);
     };
     calcCols();
-    window.addEventListener('resize', calcCols, { passive: true } as any);
-    window.addEventListener('orientationchange', calcCols, { passive: true } as any);
-    return () => {
-      window.removeEventListener('resize', calcCols as any);
-      window.removeEventListener('orientationchange', calcCols as any);
-    };
+window.addEventListener("resize", calcCols, { passive: true });
+window.addEventListener("orientationchange", calcCols, { passive: true });
+
+return () => {
+  window.removeEventListener("resize", calcCols);
+  window.removeEventListener("orientationchange", calcCols);
+};
+
   }, []);
   const pageSize = ROWS_PER_PAGE * cols;
 
