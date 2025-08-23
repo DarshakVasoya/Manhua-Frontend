@@ -12,7 +12,7 @@ export default function CategoryPage() {
  // Only define 'category' once
  const category = decodeURIComponent(slug || '');
   const router = useRouter();
-  const pathname = usePathname();
+
   React.useEffect(() => {
     document.title = `${category} Manga - Read ${category} Manhwa Online | ManhwaGalaxy`;
     let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;

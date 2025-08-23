@@ -57,13 +57,14 @@ export default function DetailsPage(){
     description?: string;
   }
   const [details, setDetails] = useState<MangaDetails | null>(null);
-  const [chapters, setChapters] = useState<Chapter[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [bookmarked, setBookmarked] = useState(false);
   const [descExpanded, setDescExpanded] = useState(false);
   // Client-side pagination (no URL params)
   const [page, setPage] = useState(1);
+  // Chapters state
+  const [chapters, setChapters] = useState<Chapter[]>([]);
   // const pageSize = 20; // chapters per page
    const ROWS_PER_PAGE = 10;
   const [cols, setCols] = useState(1);

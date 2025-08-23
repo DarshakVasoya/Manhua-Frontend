@@ -16,7 +16,7 @@ export default function Header() {
   const [hidden, setHidden] = useState(false);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
-  const catRef = React.useRef<HTMLDivElement | null>(null); // leftover ref (not used now)
+
   const lastScrollRef = React.useRef(0);
   const tickingRef = React.useRef(false);
   const scrollDirRef = React.useRef<'up'|'down'|null>(null);
@@ -72,7 +72,7 @@ export default function Header() {
       const next = t === 'dark' ? 'light' : 'dark';
       document.documentElement.dataset.theme = next;
       document.body.dataset.theme = next;
-      try { localStorage.setItem('theme', next); } catch(e) {}
+
       return next;
     });
   };

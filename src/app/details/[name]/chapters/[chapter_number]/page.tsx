@@ -312,7 +312,7 @@ export default function ChapterNumberOnly() {
   }, [prev, next, decoded, chapterImages.length, visibleCount, router]);
 
   return (
-    <main className="container-page max-w-4xl mx-auto py-10">
+  <main className="container-page max-w-2xl mx-auto py-10">
       <nav className="text-xs mb-6 text-[var(--color-text-dim)] flex gap-1 items-center">
        <Link href="/" className="hover:text-white">
   Home
@@ -354,8 +354,8 @@ export default function ChapterNumberOnly() {
               setOverrideSrc(m => ({...m, [idx]: origSrc + (origSrc.includes('?')?'&':'?') + 'retry=' + Date.now()}));
             };
             return (
-              <div key={idx} className="w-full max-w-3xl flex flex-col items-center">
-                <div className={`relative w-full overflow-hidden`}>
+              <div key={idx} className="w-full flex flex-col items-center">
+                <div className="relative w-full flex justify-center overflow-hidden">
                   {!loaded && !hadError && (
                     <div className="w-full h-[600px] max-h-[90vh] shimmer flex items-center justify-center text-[10px] text-[var(--color-text-dim)]">Loading image…</div>
                   )}
@@ -375,7 +375,7 @@ export default function ChapterNumberOnly() {
                     decoding="async"
                     onLoad={() => setLoadedMap(m => ({...m, [idx]: true}))}
                     onError={() => setErrorMap(m => ({...m, [idx]: (m[idx]||0)+1 }))}
-                    className={`w-full h-auto object-contain select-none transition-opacity duration-500 ease-out ${loaded ? 'opacity-100' : 'opacity-0'} ${hadError ? 'hidden' : ''}`}
+                    className={`max-w-[800px] w-full h-auto object-contain select-none transition-opacity duration-500 ease-out ${loaded ? 'opacity-100' : 'opacity-0'} ${hadError ? 'hidden' : ''}`}
                     // @ts-expect-error vendor style
 style={{ WebkitUserDrag: 'none' }}
                   />

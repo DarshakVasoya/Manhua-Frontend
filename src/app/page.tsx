@@ -1,6 +1,6 @@
 "use client";
-
 import React, { useEffect, useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 interface MangaItem {
   name: string;
   cover_image?: string;
@@ -24,6 +24,8 @@ const API_BASE = 'https://api.manhwagalaxy.org/manhwa';
 
 export default function HomePage() {
   const [isOnline, setIsOnline] = useState(true);
+  const searchParams = useSearchParams();
+  const router = useRouter();
   useEffect(() => {
     setIsOnline(typeof navigator !== 'undefined' ? navigator.onLine : true);
     const handleOnline = () => setIsOnline(true);
@@ -48,7 +50,7 @@ export default function HomePage() {
   const PAGE_SIZE = 24;
   const [items, setItems] = useState<MangaItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
+  const page = Number(searchParams.get('page') || 1);
   const [totalPages, setTotalPages] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -100,19 +102,19 @@ export default function HomePage() {
   const baseBtn = 'px-3 py-2 rounded-md text-xs font-semibold border transition cursor-pointer disabled:cursor-default';
     if (start > 1) {
       nodes.push(
-        <button key={1} onClick={() => setPage(1)} disabled={page === 1} className={`${baseBtn} ${page === 1 ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)]' : 'bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-accent)]'}`}>1</button>
+        <button key={1} onClick={() => router.push('/?page=1')} disabled={page === 1} className={`${baseBtn} ${page === 1 ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)]' : 'bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-accent)]'}`}>1</button>
       );
       if (start > 2) nodes.push(<span key="s-ellipsis" className="px-2 text-[var(--color-text-dim)]">…</span>);
     }
     for (let i = start; i <= end; i++) {
       nodes.push(
-        <button key={i} onClick={() => setPage(i)} disabled={page === i} className={`${baseBtn} ${page === i ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)]' : 'bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-accent)]'}`}>{i}</button>
+        <button key={i} onClick={() => router.push(`/?page=${i}`)} disabled={page === i} className={`${baseBtn} ${page === i ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)]' : 'bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-accent)]'}`}>{i}</button>
       );
     }
     if (end < totalPages) {
       if (end < totalPages - 1) nodes.push(<span key="e-ellipsis" className="px-2 text-[var(--color-text-dim)]">…</span>);
       nodes.push(
-        <button key={totalPages} onClick={() => setPage(totalPages)} disabled={page === totalPages} className={`${baseBtn} ${page === totalPages ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)]' : 'bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-accent)]'}`}>{totalPages}</button>
+        <button key={totalPages} onClick={() => router.push(`/?page=${totalPages}`)} disabled={page === totalPages} className={`${baseBtn} ${page === totalPages ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)]' : 'bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-accent)]'}`}>{totalPages}</button>
       );
     }
     return nodes;
@@ -134,7 +136,7 @@ export default function HomePage() {
           <span className="font-semibold text-base mb-2">Oops! Something went wrong.</span>
           <span className="mb-3">{error}</span>
           <button
-            onClick={() => { setError(null); setLoading(true); setPage(1); }}
+            onClick={() => { setError(null); setLoading(true); router.push('/?page=1'); }}
             className="px-4 py-2 rounded bg-[var(--color-accent)] text-white font-medium hover:bg-[var(--color-accent-hover)] transition"
           >Retry</button>
         </div>

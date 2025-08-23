@@ -38,7 +38,7 @@ interface MangaItem {
 const titleOf = (it: MangaItem) => it?.title || it?.name || it?.manga_title || it?.mangaName || "";
 const coverOf = (it: MangaItem) => normalizeUrl(it?.cover_image || it?.image_url || it?.cover || it?.thumbnail || it?.image || "");
 const latestChapterOf = (it: MangaItem) => it?.latestChapter || it?.last_chapter || it?.chapter;
-const postedOnOf = (it: MangaItem) => it?.updated_at || it?.posted_on || it?.date || it?.time;
+const postedOnOf = (it: MangaItem) =>  it?.posted_on ;
 
 export default function MangaGrid({ items }: { items: MangaItem[] }) {
   return (

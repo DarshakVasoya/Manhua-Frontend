@@ -37,7 +37,7 @@ export default function TermsPage() {
       </section>
       <section>
         <h2 className="text-lg font-semibold mb-2">6. Contact</h2>
-        <p>If you have any questions about these Terms, please contact us at support@manhwagalaxy.com.</p>
+        <p>If you have any questions about these Terms, please contact us at darshakvasoya6@gmail.com .</p>
       </section>
     </main>
   );
