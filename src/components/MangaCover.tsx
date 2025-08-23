@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import styles from './MangaCover.module.css';
 
 export interface Chapter {
@@ -33,8 +34,8 @@ const MangaCover: React.FC<MangaCoverProps> = ({
 }) => {
 	const [loaded, setLoaded] = useState(false);
 	return (
-		<div className={styles.card}>
-			<a href={mangaUrl} className={styles.imageLink} title={title}>
+ 		<div className={styles.card}>
+ 			<Link href={mangaUrl} className={styles.imageLink} title={title}>
 				<div className={styles.imageOuter}>  
 					{!loaded && <div className={styles.skeleton} />}
 					<div className={styles.imageWrapper}>
@@ -60,9 +61,9 @@ const MangaCover: React.FC<MangaCoverProps> = ({
 						</div>
 					</div>
 				</div>
-			</a>
+ 			</Link>
 			<div className={styles.info}>
-				<a href={mangaUrl} className={styles.title} title={title}>{title}</a>
+ 				<Link href={mangaUrl} className={styles.title} title={title}>{title}</Link>
 				{tags.length > 0 && (
 					<div className={styles.tagsRow}>
 						{tags.slice(0,3).map(t => (
@@ -74,12 +75,12 @@ const MangaCover: React.FC<MangaCoverProps> = ({
 				{chapters.length > 0 && (
 					<ul className={styles.chapters}>
 						{chapters.slice(0,2).map((ch) => (
-							<li key={ch.number}>
-								<a href={ch.url} className={styles.chapterLink}>
-									<span className={styles.chapterNum}>Ch. {ch.number}</span>
-									<span className={styles.chapterTime}>{ch.time}</span>
-								</a>
-							</li>
+ 							<li key={ch.number}>
+ 								<Link href={ch.url} className={styles.chapterLink}>
+ 									<span className={styles.chapterNum}>Ch. {ch.number}</span>
+ 									<span className={styles.chapterTime}>{ch.time}</span>
+ 								</Link>
+ 							</li>
 						))}
 					</ul>
 				)}

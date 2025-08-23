@@ -1,14 +1,41 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+interface MangaItem {
+  name: string;
+  cover_image?: string;
+  rating?: number;
+  last_chapter?: string;
+  posted_on?: string;
+  updated_at?: string;
+  genres?: string[];
+  genre?: string;
+  image?: string;
+  title?: string;
+  [key: string]: unknown;
+}
+import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from 'next/navigation';
 import MangaCardRef from '@/components/MangaCardRef';
 import SubHeader from '@/components/SubHeader';
 
-const API_BASE = 'http://165.232.60.4:8000/manhwa';
+const API_BASE = 'https://api.manhwagalaxy.org/manhwa';
 
-export default function Home() {
-  React.useEffect(() => {
+export default function HomePage() {
+  const [isOnline, setIsOnline] = useState(true);
+  useEffect(() => {
+    setIsOnline(typeof navigator !== 'undefined' ? navigator.onLine : true);
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+  useEffect(() => {
     document.title = "ManhwaGalaxy - Read Free Manhwa Online";
     let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
     if (!meta) {
@@ -19,7 +46,7 @@ export default function Home() {
     meta.content = "Discover and read the latest manhwa chapters online for free at ManhwaGalaxy. Browse genres, bookmark favorites, and stay updated with new releases.";
   }, []);
   const PAGE_SIZE = 24;
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<MangaItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -31,7 +58,7 @@ export default function Home() {
     let active = true;
     setLoading(true);
     setError(null);
-    fetch(`${API_BASE}?page=${page}&limit=${PAGE_SIZE}`)
+  fetch(`${API_BASE}?page=${page}&limit=${PAGE_SIZE}`)
       .then(r => r.json())
       .then(data => {
         if (!active) return;
@@ -93,6 +120,12 @@ export default function Home() {
 
   return (
     <main className="container-page">
+      {!isOnline && (
+        <div className="mb-4 p-4 rounded-lg border border-yellow-400 bg-yellow-50 text-yellow-700 flex items-center justify-center">
+          <span className="font-semibold text-base mr-2">You are offline.</span>
+          <span>Please check your internet connection.</span>
+        </div>
+      )}
       <div className="mb-5">
         <SubHeader />
       </div>
@@ -110,12 +143,12 @@ export default function Home() {
       ) : (
         <>
           <ul className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 fade-in">
-            {items.map((item: any) => (
+            {items.map((item: MangaItem) => (
               <li key={item.name} className="list-none">
                 <MangaCardRef
                   title={item.name}
-                  imageUrl={item.cover_image}
-                  mangaUrl={`/details/${encodeURIComponent(item.name)}`}
+                  imageUrl={item.cover_image || ""}
+                  mangaUrl={`/details/${item.name.trim().replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '').toLowerCase()}`}
                   rating={item.rating}
                   lastChapter={item.last_chapter}
                   postedOn={item.posted_on || item.updated_at || ''}
@@ -130,31 +163,32 @@ export default function Home() {
       {/* Pagination */}
       {totalPages > 1 && !loading && !error && (
         <div className="flex flex-wrap justify-center items-center gap-2 py-10">
-          <button
-            onClick={() => setPage(1)}
-            disabled={page === 1}
-            className="px-3 py-2 rounded-md text-xs font-medium bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] disabled:opacity-40 cursor-pointer disabled:cursor-default"
-            aria-label="First page"
-          >First</button>
-          <button
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="px-3 py-2 rounded-md text-xs font-medium bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] disabled:opacity-40 cursor-pointer disabled:cursor-default"
-            aria-label="Previous page"
-          >Prev</button>
+          <Link
+            href={`?page=1`}
+            className={`px-3 py-2 rounded-md text-xs font-medium bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] ${page === 1 ? 'opacity-40 cursor-default pointer-events-none' : 'cursor-pointer'}`}
+            aria-disabled={page === 1}
+            tabIndex={page === 1 ? -1 : 0}
+          >First</Link>
+          <Link
+            href={`?page=${Math.max(1, page - 1)}`}
+            className={`px-3 py-2 rounded-md text-xs font-medium bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] ${page === 1 ? 'opacity-40 cursor-default pointer-events-none' : 'cursor-pointer'}`}
+            aria-disabled={page === 1}
+            tabIndex={page === 1 ? -1 : 0}
+          >Prev</Link>
           {pageButtons()}
-          <button
-            onClick={() => setPage(p => (p < totalPages ? p + 1 : p))}
-            disabled={page === totalPages || !hasNextPage}
-            className="px-3 py-2 rounded-md text-xs font-medium bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] disabled:opacity-40 cursor-pointer disabled:cursor-default"
-            aria-label="Next page"
-          >Next</button>
-          <button
-            onClick={() => setPage(totalPages)}
-            disabled={page === totalPages}
-            className="px-3 py-2 rounded-md text-xs font-medium bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] disabled:opacity-40 cursor-pointer disabled:cursor-default"
-            aria-label="Last page"
-          >Last</button>
+          <Link
+            href={`?page=${page < totalPages ? page + 1 : page}`}
+            className={`px-3 py-2 rounded-md text-xs font-medium bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] ${(page === totalPages || !hasNextPage) ? 'opacity-40 cursor-default pointer-events-none' : 'cursor-pointer'}`}
+            aria-disabled={page === totalPages || !hasNextPage}
+            tabIndex={(page === totalPages || !hasNextPage) ? -1 : 0}
+          >Next</Link>
+          <Link
+            href={`?page=${totalPages}`}
+            className={`px-3 py-2 rounded-md text-xs font-medium bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] ${page === totalPages ? 'opacity-40 cursor-default pointer-events-none' : 'cursor-pointer'}`}
+            aria-disabled={page === totalPages}
+            tabIndex={page === totalPages ? -1 : 0}
+          >Last</Link>
+         
         </div>
       )}
     </main>

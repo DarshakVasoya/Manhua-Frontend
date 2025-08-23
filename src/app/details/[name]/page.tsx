@@ -1,19 +1,24 @@
 "use client";
 import React, { useEffect, useState, useMemo } from 'react';
+import Link from "next/link";
+import Image from "next/image";
 import { useParams } from 'next/navigation';
-const API_BASE = 'http://165.232.60.4:8000/manhwa';
+const API_BASE = 'https://api.manhwagalaxy.org/manhwa';
 
-interface Chapter { 
-  chapter_number: number | string; 
-  title?: string; 
-  link?: string; 
+interface Chapter {
+  chapter_number: number | string;
+  chapternum?: string | number;
+  chapter?: string | number;
+  chapterdate?: string;
+  title?: string;
+  link?: string;
   date?: string; // uploaded date
   rawLabel?: string; // original chapternum text
 }
 
 export default function DetailsPage(){
   const params = useParams();
-  const raw = (params?.name as any);
+  const raw = params?.name as string | string[];
   const name = Array.isArray(raw) ? raw.join('/') : raw;
   // Only define 'decoded' once
   const decoded = decodeURIComponent(name || '');
@@ -31,7 +36,27 @@ export default function DetailsPage(){
 
 
   
-  const [details, setDetails] = useState<any>(null);
+  interface MangaDetails {
+    name: string;
+    cover_image?: string;
+    colored?: boolean;
+    followers?: number;
+    rating?: string;
+    last_chapter?: string;
+    posted_on?: string;
+    alternative?: string;
+    status?: string;
+    type?: string;
+    released?: string;
+    author?: string;
+    artist?: string;
+    posted_by?: string;
+    updated_on?: string;
+    views?: number;
+    genres?: string[];
+    description?: string;
+  }
+  const [details, setDetails] = useState<MangaDetails | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -90,17 +115,17 @@ export default function DetailsPage(){
       });
       const chapterUrlCandidates = [
         ...nameVariants.flatMap(v=>[
-          `${API_BASE}/${encodeURIComponent(v)}/chapter?order=esc`,
-          `${API_BASE}/${encodeURIComponent(v)}/chapter?order=asc`,
-          `${API_BASE}/${encodeURIComponent(v)}/chapter?order=desc`,
+          `${API_BASE}/${encodeURIComponent(v)}/chapters?order=esc`,
+          `${API_BASE}/${encodeURIComponent(v)}/chapters?order=asc`,
+          `${API_BASE}/${encodeURIComponent(v)}/chapters?order=desc`,
           `${API_BASE}/${encodeURIComponent(v)}/chapters`
         ])
       ];
       // Parallel fetch
-      let detailData: any = null;
-      let chapterData: any[] | null = null;
-      let lastDetailErr: any = null;
-      let lastChapterErr: any = null;
+  let detailData: MangaDetails | null = null;
+  let chapterData: Chapter[] | null = null;
+  let lastDetailErr: unknown = null;
+  let lastChapterErr: unknown = null;
       await Promise.all([
         (async () => {
           for(const u of detailUrls){
@@ -119,10 +144,10 @@ export default function DetailsPage(){
         chapterData = [];
       }
       // Normalize chapters ascending
-      let mapped = chapterData.map((c:any, idx:number)=>{
+  const mapped = chapterData.map((c:Chapter, idx:number)=>{
         if(c && (c.chapternum || c.chapterdate)) {
           const rawLabel = c.chapternum || c.chapter || c.chapter_number || '';
-          const numMatch = /([0-9]+(?:\.[0-9]+)?)/.exec(rawLabel);
+          const numMatch = /([0-9]+(?:\.[0-9]+)?)/.exec(String(rawLabel));
           const parsedNum = numMatch ? numMatch[1] : (c.chapter_number ?? idx+1);
           return {
             chapter_number: parsedNum,
@@ -234,7 +259,7 @@ export default function DetailsPage(){
   return (
     <main className="container-page max-w-5xl mx-auto py-6">
       <nav className="text-xs mb-4 text-[var(--color-text-dim)] flex gap-1">
-        <a href="/" className="hover:text-white">Home</a>
+        <Link href="/" className="hover:text-white">Home</Link>
         <span>/</span>
         <span className="truncate max-w-[320px]" title={decoded}>{decoded}</span>
       </nav>
@@ -261,7 +286,7 @@ export default function DetailsPage(){
         </div>
       )}
       {!loading && details && (() => {
-        const ratingNum = parseFloat(details.rating) || 0;
+        const ratingNum = parseFloat(details.rating ?? "") || 0;
         const ratingPct = Math.max(0, Math.min(100, (ratingNum/10)*100));
         const firstChapter = chapters.length > 0 ? chapters[0] : null;
         const latestChapter = chapters.length > 0 ? chapters[chapters.length-1] : null;
@@ -275,7 +300,7 @@ export default function DetailsPage(){
                   <React.Suspense fallback={<div className="w-56 aspect-[3/4.3] rounded-lg border border-[var(--color-border)] shimmer" />}>
                     <div className="relative overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={details.cover_image} alt={details.name} className="w-full h-auto object-cover" loading="lazy" />
+                      <Image src={details.cover_image || "/default.jpg"} alt={details.name} className="w-full h-auto object-cover" width={220} height={320} />
                       {details.colored && <span className="absolute top-2 left-2 text-[10px] bg-[var(--color-accent)] text-white font-semibold px-2 py-1 rounded-md flex items-center gap-1"><span>Color</span></span>}
                     </div>
                   </React.Suspense>
@@ -338,7 +363,7 @@ export default function DetailsPage(){
                 {Array.isArray(details.genres) && details.genres.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-6">
                     {details.genres.map((g: string) => (
-                      <a key={g} href={`/category/${encodeURIComponent(g)}`} className="pill-cat !text-[10px] !py-1 !px-3">{g}</a>
+                      <Link key={g} href={`/category/${encodeURIComponent(g)}`} className="pill-cat !text-[10px] !py-1 !px-3">{g}</Link>
                     ))}
                   </div>
                 )}
@@ -364,8 +389,8 @@ export default function DetailsPage(){
             {renderPagination()}
           </div>
          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-            {pageChapters.map((ch: any, idx: number) => (
-              <a
+            {pageChapters.map((ch: Chapter, idx: number) => (
+              <Link
                 key={ch.chapter_number}
                 href={`/details/${encodeURIComponent(decoded)}/chapters/${ch.chapter_number}`}
                 className="h-10 px-3 rounded-md bg-[var(--color-surface)] border border-[var(--color-border)] text-xs flex items-center justify-between hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)]/10 transition group relative"
@@ -375,7 +400,7 @@ export default function DetailsPage(){
                   {ch.date && <span className="text-[10px] text-[var(--color-text-dim)] ml-3 whitespace-nowrap">{ch.date}</span>}
                 </div>
                 {ch.title && <span className="text-[var(--color-text-dim)] truncate max-w-full">{ch.title}</span>}
-              </a>
+              </Link>
             ))}
           </div>
           {renderPagination()}

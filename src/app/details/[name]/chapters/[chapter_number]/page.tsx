@@ -69,9 +69,9 @@ export default function ChapterNumberOnly() {
     const endpoints: string[] = [];
     variants.forEach(v=>{
       const enc = encodeURIComponent(v);
-      endpoints.push(`http://165.232.60.4:8000/manhwa/${enc}/chapter?order=esc`);
-      endpoints.push(`http://165.232.60.4:8000/manhwa/${enc}/chapter?order=asc`);
-      endpoints.push(`http://165.232.60.4:8000/manhwa/${enc}/chapters`);
+  endpoints.push(`https://api.manhwagalaxy.org/manhwa/${enc}/chapters?order=esc`);
+  endpoints.push(`https://api.manhwagalaxy.org/manhwa/${enc}/chapters?order=asc`);
+  endpoints.push(`https://api.manhwagalaxy.org/manhwa/${enc}/chapters`);
     });
     (async ()=>{
       for(const url of endpoints){
@@ -154,9 +154,9 @@ export default function ChapterNumberOnly() {
     const endpoints: string[] = [];
     variants.forEach(v=>{
       const enc = encodeURIComponent(v);
-      endpoints.push(`http://165.232.60.4:8000/manhwa/${enc}/chapters/${chapter_number}?order=desc`);
-      endpoints.push(`http://165.232.60.4:8000/manhwa/${enc}/chapters/${chapter_number}?order=asc`);
-      endpoints.push(`http://165.232.60.4:8000/manhwa/${enc}/chapters/${chapter_number}`);
+  endpoints.push(`https://api.manhwagalaxy.org/manhwa/${enc}/chapters/${chapter_number}?order=desc`);
+  endpoints.push(`https://api.manhwagalaxy.org/manhwa/${enc}/chapters/${chapter_number}?order=asc`);
+  endpoints.push(`https://api.manhwagalaxy.org/manhwa/${enc}/chapters/${chapter_number}`);
     });
     (async()=>{
       let lastErr: any = null;
@@ -204,9 +204,9 @@ export default function ChapterNumberOnly() {
         const endpoints: string[] = [];
         variants.forEach(v=>{
           const enc = encodeURIComponent(v);
-          endpoints.push(`http://165.232.60.4:8000/manhwa/${enc}/chapters/${next.chapter_number}?order=desc`);
-          endpoints.push(`http://165.232.60.4:8000/manhwa/${enc}/chapters/${next.chapter_number}?order=asc`);
-          endpoints.push(`http://165.232.60.4:8000/manhwa/${enc}/chapters/${next.chapter_number}`);
+    endpoints.push(`https://api.manhwagalaxy.org/manhwa/${enc}/chapters/${next.chapter_number}?order=desc`);
+    endpoints.push(`https://api.manhwagalaxy.org/manhwa/${enc}/chapters/${next.chapter_number}?order=asc`);
+    endpoints.push(`https://api.manhwagalaxy.org/manhwa/${enc}/chapters/${next.chapter_number}`);
         });
         let found: CachedChapterData | null = null;
         for(const url of endpoints){
@@ -308,9 +308,9 @@ export default function ChapterNumberOnly() {
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
         <select value={`/details/${encodeURIComponent(decoded)}/chapters/${chapter_number}`} onChange={onSelect} className="px-3 h-9 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] text-xs font-medium focus:outline-none focus:border-[var(--color-accent)] w-full sm:w-auto min-w-[200px]">
           <option value="" disabled>{loadingChapters ? 'Loading…' : 'Select Chapter'}</option>
-          {chaptersDesc.map(c => (
-            <option key={c.chapter_number} value={`/details/${encodeURIComponent(decoded)}/chapters/${c.chapter_number}`}>Chapter {c.chapter_number}</option>
-          ))}
+           {chaptersDesc.map((c, idx) => (
+             <option key={`${c.chapter_number}-${idx}`} value={`/details/${encodeURIComponent(decoded)}/chapters/${c.chapter_number}`}>Chapter {c.chapter_number}</option>
+           ))}
         </select>
         <div className="flex items-center gap-2 sm:ml-auto">
           <button disabled={!prev} onClick={()=> prev && router.push(`/details/${encodeURIComponent(decoded)}/chapters/${prev.chapter_number}`)} className={`px-4 h-9 rounded-md border text-xs font-medium transition ${prev ? 'bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-accent)]' : 'bg-[var(--color-surface)] border-[var(--color-border)] opacity-40 cursor-not-allowed'}`}>Prev</button>
@@ -374,9 +374,9 @@ export default function ChapterNumberOnly() {
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mt-10">
           <select value={`/details/${encodeURIComponent(decoded)}/chapters/${chapter_number}`} onChange={onSelect} className="px-3 h-9 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] text-xs font-medium focus:outline-none focus:border-[var(--color-accent)] w-full sm:w-auto min-w-[200px]">
             <option value="" disabled>{loadingChapters ? 'Loading…' : 'Select Chapter'}</option>
-            {chaptersDesc.map(c => (
-              <option key={c.chapter_number} value={`/details/${encodeURIComponent(decoded)}/chapters/${c.chapter_number}`}>Chapter {c.chapter_number}</option>
-            ))}
+             {chaptersDesc.map((c, idx) => (
+               <option key={`${c.chapter_number}-${idx}`} value={`/details/${encodeURIComponent(decoded)}/chapters/${c.chapter_number}`}>Chapter {c.chapter_number}</option>
+             ))}
           </select>
           <div className="flex items-center gap-2 sm:ml-auto">
             <button disabled={!prev} onClick={()=> prev && router.push(`/details/${encodeURIComponent(decoded)}/chapters/${prev.chapter_number}`)} className={`px-4 h-9 rounded-md border text-xs font-medium transition ${prev ? 'bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-accent)]' : 'bg-[var(--color-surface)] border-[var(--color-border)] opacity-40 cursor-not-allowed'}`}>Prev</button>

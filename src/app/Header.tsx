@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from 'next/navigation';
 import SearchBar from "../components/SearchBar";
 
@@ -80,24 +82,28 @@ export default function Header() {
       <div className="container-page flex items-center pt-3 pb-2 min-w-0">
         {/* Logo and nav on left */}
         <div className="flex items-center gap-4 flex-1">
-          <a href="/" className="flex items-center gap-2 group" aria-label="Go to homepage">
+          <Link href="/" className="flex items-center gap-2 group" aria-label="Go to homepage">
             {/* Two logos; show/hide via data-theme attribute */}
-            <img
+            <Image
               src="/manhwagalaxy-logo-2.svg"
-              alt="ManhwaGalaxy" width={120} height={48}
+              alt="ManhwaGalaxy"
+              width={120}
+              height={48}
               className="transition group-hover:brightness-110 hidden dark-inline"
               data-logo="dark"
             />
-            <img
+            <Image
               src="/manhwagalaxy-logo-2-light.svg"
-              alt="ManhwaGalaxy" width={120} height={48}
+              alt="ManhwaGalaxy"
+              width={120}
+              height={48}
               className="transition group-hover:brightness-110"
               data-logo="light"
             />
-          </a>
+          </Link>
           <nav className={`gap-6 ${open ? 'flex flex-col absolute top-full left-0 w-full bg-[var(--color-surface)] border-t border-[var(--color-border)] z-50 p-4' : 'hidden md:flex'}`}>
-            <a href="/" className="text-sm font-semibold text-[var(--color-text-dim)] hover:text-[var(--color-text)]">Home</a>
-            <a href="/bookmark" className="text-sm font-semibold text-[var(--color-text-dim)] hover:text-[var(--color-text)]">Bookmark</a>
+            <Link href="/" className="text-sm font-semibold text-[var(--color-text-dim)] hover:text-[var(--color-text)]">Home</Link>
+            <Link href="/bookmark" className="text-sm font-semibold text-[var(--color-text-dim)] hover:text-[var(--color-text)]">Bookmark</Link>
           </nav>
         </div>
         {/* Right controls for mobile and desktop */}

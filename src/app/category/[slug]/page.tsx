@@ -5,7 +5,7 @@ import { usePathname, useRouter, useParams } from 'next/navigation';
 import MangaCardRef from '@/components/MangaCardRef';
 import SubHeader from '@/components/SubHeader';
 
-const API_BASE = 'http://165.232.60.4:8000/manhwa';
+const API_BASE = 'https://api.manhwagalaxy.org/manhwa';
 
 export default function CategoryPage() {
  const { slug } = useParams<{ slug: string }>();
@@ -32,7 +32,20 @@ export default function CategoryPage() {
   }, [category, router]);
 
   const PAGE_SIZE = 24;
-  const [items, setItems] = useState<any[]>([]);
+  interface MangaItem {
+    name: string;
+    cover_image?: string;
+    rating?: number;
+    last_chapter?: string;
+    posted_on?: string;
+    updated_at?: string;
+    genres?: string[];
+    genre?: string;
+    image?: string;
+    title?: string;
+    [key: string]: unknown;
+  }
+  const [items, setItems] = useState<MangaItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -127,11 +140,11 @@ export default function CategoryPage() {
         renderSkeletons()
       ) : (
         <ul className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 fade-in">
-          {items.map((item: any) => (
+          {items.map((item: MangaItem) => (
             <li key={item.name} className="list-none">
               <MangaCardRef
                 title={item.name}
-                imageUrl={item.cover_image}
+                imageUrl={item.cover_image || ""}
                 mangaUrl={`/details/${encodeURIComponent(item.name)}`}
                 rating={item.rating}
                 lastChapter={item.last_chapter}

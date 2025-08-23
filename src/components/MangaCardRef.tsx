@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import styles from './MangaCardRef.module.css';
 
 export interface RefChapter { number: number | string; url: string; time?: string; }
@@ -29,16 +30,19 @@ const MangaCardRef: React.FC<MangaCardRefProps> = ({
   typeLabel,
   colored = false,
   hot = false,
+  index,
 }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
 
 
     // Build chapter URL from the details page URL
-  const detailsBase = mangaUrl.replace(/\/+$/, '');
+  // Use hyphens for readable URLs
+  const slugify = (str: string) => str.trim().replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '').toLowerCase();
+  const detailsBase = `/details/${slugify(title)}`;
  const makeChapterUrl = (num: number | string) => {
-  const cleanNum = String(num).replace(/^Chapter\s*/i, '').replace(/\s+/g, '');
-  return `${detailsBase}/chapters/${encodeURIComponent(cleanNum)}`;
-};
+   const cleanNum = String(num).replace(/^Chapter\s*/i, '').replace(/\s+/g, '');
+   return `${detailsBase}/chapters/${encodeURIComponent(cleanNum)}`;
+ };
 
 
     const displayChapters =
@@ -69,14 +73,21 @@ const MangaCardRef: React.FC<MangaCardRefProps> = ({
       <div className={styles.bs}>
         <Link href={mangaUrl} className={styles.limit} title={title}>
           {!imgLoaded && <div className={styles.skeleton} />}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={imageUrl} alt={title} loading="lazy" onLoad={() => setImgLoaded(true)} />
+          <Image
+            src={imageUrl || "/default.jpg"}
+            alt={title}
+            width={180}
+            height={240}
+            onLoad={() => setImgLoaded(true)}
+            className={styles.coverImg}
+            priority={typeof index === 'number' && index < 8}
+          />
           <div className={styles.ply}>
             {rating !== undefined && <span className={styles.rating}>⭐ {rating}</span>}
+            {typeLabel && <span className={styles.type}>{typeLabel}</span>}
+            {colored && <span className={styles.col}>COLORED</span>}
+            {hot && <span className={styles.hot}>HOT</span>}
           </div>
-                    {typeLabel && <span className={styles.type}>{typeLabel}</span>}
-          {colored && <span className={styles.col}>COLORED</span>}
-          {hot && <span className={styles.hot}>HOT</span>}
         </Link>
         <div className={styles.bigor}>
           <Link href={mangaUrl} className={styles.tt} title={title}>{title}</Link>
