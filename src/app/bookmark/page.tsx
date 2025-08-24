@@ -17,6 +17,10 @@ export default function BookmarkPage(){
   const [mounted, setMounted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const STORAGE_KEYS = ['bookmarks:v1', 'bookmarks'];
+    // Utility to format title
+    function formatTitle(str: string) {
+      return str.replace(/-/g, ' ').replace(/\s+/g, ' ').trim().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    }
 
   const load = () => {
     try {
@@ -76,7 +80,7 @@ export default function BookmarkPage(){
 
   return (
     <main className="container-page max-w-5xl mx-auto py-10">
-      <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-6">Bookmarks</h1>
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-6">Bookmarks</h1>
       {items.length===0 && (
         <div className="text-sm text-[var(--color-text-dim)] border border-[var(--color-border)] rounded-lg p-6 bg-[var(--color-bg-alt)] flex items-center justify-between gap-4">
         {error && (

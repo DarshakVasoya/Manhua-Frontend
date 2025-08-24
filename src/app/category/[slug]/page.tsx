@@ -16,6 +16,11 @@ export default function CategoryPage() {
   React.useEffect(() => {
     document.title = `${category} Manga - Read ${category} Manhwa Online | ManhwaGalaxy`;
     let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
+    // Utility to format title
+    function formatTitle(str: string) {
+      return str.replace(/-/g, ' ').replace(/\s+/g, ' ').trim().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    }
+    document.title = `${formatTitle(category)} Manga - Read ${formatTitle(category)} Manhwa Online | ManhwaGalaxy`;
     if (!meta) {
       meta = document.createElement('meta') as HTMLMetaElement;
       meta.name = "description";

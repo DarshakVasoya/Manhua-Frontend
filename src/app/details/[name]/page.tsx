@@ -21,7 +21,15 @@ export default function DetailsPage(){
   const raw = params?.name as string | string[];
   const name = Array.isArray(raw) ? raw.join('/') : raw;
   // Only define 'decoded' once
-  const decoded = decodeURIComponent(name || '').replace(/-/g, ' ');
+  const hyphenName = decodeURIComponent(name || '').replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '').toLowerCase();
+  // Capitalize each word and remove unnecessary hyphens for display
+  const decoded = decodeURIComponent(name || '')
+    .replace(/-/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
   React.useEffect(() => {
     document.title = `${decoded} | ManhwaGalaxy`;
     let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
@@ -276,7 +284,7 @@ return () => {
           >Retry</button>
         </div>
       ) : null}
-      <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-5">{decoded}</h1>
+  <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-5">{decoded}</h1>
       {loading && (
         <div className="grid md:grid-cols-[220px_1fr] gap-8 mb-10">
           <div className="w-56 aspect-[3/4.3] rounded-lg border border-[var(--color-border)] shimmer" />
@@ -325,14 +333,14 @@ return () => {
                 {(firstChapter || latestChapter) && (
                   <div className="grid grid-cols-2 gap-2 text-[11px]">
                     {firstChapter && (
-                      <a href={`/details/${encodeURIComponent(decoded)}/chapters/${firstChapter.chapter_number}`} className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 flex flex-col hover:border-[var(--color-accent)] transition">
+                      <a href={`/details/${hyphenName}/chapters/${firstChapter.chapter_number}`} className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 flex flex-col hover:border-[var(--color-accent)] transition">
                         <span className="text-[var(--color-text-dim)]">First:</span>
                         <span className="font-semibold text-[var(--color-text)] truncate">Chapter {firstChapter.chapter_number}</span>
                         {firstChapter.date && <span className="text-[10px] text-[var(--color-text-dim)] mt-1">{firstChapter.date}</span>}
                       </a>
                     )}
                     {latestChapter && (
-                      <a href={`/details/${encodeURIComponent(decoded)}/chapters/${latestChapter.chapter_number}`} className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 flex flex-col hover:border-[var(--color-accent)] transition">
+                      <a href={`/details/${hyphenName}/chapters/${latestChapter.chapter_number}`} className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 flex flex-col hover:border-[var(--color-accent)] transition">
                         <span className="text-[var(--color-text-dim)]">Latest:</span>
                         <span className="font-semibold text-[var(--color-text)] truncate">Chapter {latestChapter.chapter_number}</span>
                         {latestChapter.date && <span className="text-[10px] text-[var(--color-text-dim)] mt-1">{latestChapter.date}</span>}
@@ -395,7 +403,7 @@ return () => {
             {pageChapters.map((ch: Chapter, idx: number) => (
               <Link
                 key={ch.chapter_number}
-                href={`/details/${encodeURIComponent(decoded)}/chapters/${ch.chapter_number}`}
+                href={`/details/${hyphenName}/chapters/${ch.chapter_number}`}
                 className="h-10 px-3 rounded-md bg-[var(--color-surface)] border border-[var(--color-border)] text-xs flex items-center justify-between hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)]/10 transition group relative"
               >
                 <div className="flex items-center justify-between w-full">

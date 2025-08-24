@@ -338,59 +338,52 @@ export default function ChapterNumberOnly() {
       <section className="mt-6">
         {/* Chapter label & date removed as requested */}
         {chapterLoading ? (
-          <div className="text-sm text-[var(--color-text-dim)] py-8 text-center">Loading images…</div>
+          <div className="text-sm text-[var(--color-text-dim)] py-8 text-center">Loading images, please wait…</div>
         ) : chapterError ? (
           <div className="text-sm text-red-400 py-8 text-center">{chapterError}</div>
-        ) : null}
-  <div className="flex flex-col items-center gap-0">
-          {chapterImages.slice(0, visibleCount).map((origSrc, idx)=>{
-            const src = overrideSrc[idx] || origSrc;
-            const isTrigger = idx === Math.min(visibleCount, chapterImages.length) - 2 && visibleCount < chapterImages.length; // 4th, 9th, etc.
-            const loaded = loadedMap[idx];
-            const hadError = !!errorMap[idx];
-            const retry = () => {
-              setErrorMap(m => ({...m, [idx]: (m[idx]||0)+1 }));
-              setLoadedMap(m => ({...m, [idx]: false}));
-              setOverrideSrc(m => ({...m, [idx]: origSrc + (origSrc.includes('?')?'&':'?') + 'retry=' + Date.now()}));
-            };
-            return (
-              <div key={idx} className="w-full flex flex-col items-center">
-                <div className="relative w-full flex justify-center overflow-hidden">
-                  {!loaded && !hadError && (
-                    <div className="flex items-center justify-center w-full" style={{ minHeight: '700px' }}>
-                      <div className="shimmer rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] flex items-center justify-center" style={{ width: '100%', maxWidth: '900px', height: '700px', display: 'flex' }}>
-                        <span className="text-[14px] text-[var(--color-text-dim)]">Loading image…</span>
-                      </div>
-                    </div>
-                  )}
-                  {hadError && !loaded && (
-                    <button type="button" onClick={retry} className="w-full h-[400px] max-h-[70vh] flex flex-col gap-2 items-center justify-center text-[11px] font-medium bg-[var(--color-bg-alt)] text-[var(--color-text-dim)] hover:text-white">
-                      <span>Image failed to load</span>
-                      <span className="px-2 py-1 rounded bg-[var(--color-accent)] text-white text-[10px]">Tap to retry</span>
-                    </button>
-                  )}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    ref={el => { if(isTrigger) triggerRef.current = el; if(!isTrigger && triggerRef.current === el) triggerRef.current = null; }}
-                    src={src}
-                    alt={`${chapterNumLabel} page ${idx+1}`}
-                    loading={idx===0 ? 'eager' : 'lazy'}
-                    {...(idx===0 ? { fetchPriority: 'high' as const } : {})}
-                    decoding="async"
-                    onLoad={() => setLoadedMap(m => ({...m, [idx]: true}))}
-                    onError={() => setErrorMap(m => ({...m, [idx]: (m[idx]||0)+1 }))}
-                    className={`max-w-[800px] w-full h-auto object-contain select-none transition-opacity duration-500 ease-out ${loaded ? 'opacity-100' : 'opacity-0'} ${hadError ? 'hidden' : ''}`}
-                    // @ts-expect-error vendor style
-style={{ WebkitUserDrag: 'none' }}
-                  />
+        ) : (
+          <div className="flex flex-col items-center gap-0">
+            {chapterImages.slice(0, visibleCount).map((origSrc, idx)=>{
+              const src = overrideSrc[idx] || origSrc;
+              const isTrigger = idx === Math.min(visibleCount, chapterImages.length) - 2 && visibleCount < chapterImages.length;
+              const hadError = !!errorMap[idx];
+              const retry = () => {
+                setErrorMap(m => ({...m, [idx]: (m[idx]||0)+1 }));
+                setLoadedMap(m => ({...m, [idx]: false}));
+                setOverrideSrc(m => ({...m, [idx]: origSrc + (origSrc.includes('?')?'&':'?') + 'retry=' + Date.now()}));
+              };
+              return (
+                <div key={idx} className="w-full flex flex-col items-center">
+                  <div className="relative w-full flex justify-center overflow-hidden">
+                    {hadError && (
+                      <button type="button" onClick={retry} className="w-full h-[400px] max-h-[70vh] flex flex-col gap-2 items-center justify-center text-[11px] font-medium bg-[var(--color-bg-alt)] text-[var(--color-text-dim)] hover:text-white">
+                        <span>Image failed to load</span>
+                        <span className="px-2 py-1 rounded bg-[var(--color-accent)] text-white text-[10px]">Tap to retry</span>
+                      </button>
+                    )}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      ref={el => { if(isTrigger) triggerRef.current = el; if(!isTrigger && triggerRef.current === el) triggerRef.current = null; }}
+                      src={src}
+                      alt={`${chapterNumLabel} page ${idx+1}`}
+                      loading={idx===0 ? 'eager' : 'lazy'}
+                      {...(idx===0 ? { fetchPriority: 'high' as const } : {})}
+                      decoding="async"
+                      onLoad={() => setLoadedMap(m => ({...m, [idx]: true}))}
+                      onError={() => setErrorMap(m => ({...m, [idx]: (m[idx]||0)+1 }))}
+                      className={`max-w-[800px] w-full h-auto object-contain select-none transition-opacity duration-500 ease-out opacity-100 ${hadError ? 'hidden' : ''}`}
+                      // @ts-expect-error vendor style
+                      style={{ WebkitUserDrag: 'none' }}
+                    />
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-          {visibleCount < chapterImages.length && (
-            <div className="text-[11px] text-[var(--color-text-dim)] py-4">Loading next pages…</div>
-          )}
-        </div>
+              );
+            })}
+            {visibleCount < chapterImages.length && (
+              <div className="text-[11px] text-[var(--color-text-dim)] py-4">Loading next pages…</div>
+            )}
+          </div>
+        )}
         {/* Bottom navigation */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mt-10">
           <select value={`/details/${encodeURIComponent(decoded)}/chapters/${chapter_number}`} onChange={onSelect} className="px-3 h-9 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] text-xs font-medium focus:outline-none focus:border-[var(--color-accent)] w-full sm:w-auto min-w-[200px]">
