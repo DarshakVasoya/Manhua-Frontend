@@ -104,9 +104,17 @@ export default function SearchClient() {
       }))} />}
       {list.length > 0 && (
         <div className="flex items-center justify-between gap-2 mt-6">
-          <Link href={`/search?query=${encodeURIComponent(q)}&page=${Math.max(1, page - 1)}`}>Prev</Link>
+          <Link href={`/search?query=${encodeURIComponent(q)}&page=${Math.max(1, page - 1)}`}
+            className={page === 1 ? 'opacity-40 cursor-default pointer-events-none' : ''}
+            aria-disabled={page === 1}
+            tabIndex={page === 1 ? -1 : 0}
+          >Prev</Link>
           <span>Page {page}</span>
-          <Link href={`/search?query=${encodeURIComponent(q)}&page=${page + 1}`}>Next</Link>
+          <Link href={`/search?query=${encodeURIComponent(q)}&page=${page + 1}`}
+            className={!hasNext ? 'opacity-40 cursor-default pointer-events-none' : ''}
+            aria-disabled={!hasNext}
+            tabIndex={!hasNext ? -1 : 0}
+          >Next</Link>
         </div>
       )}
     </main>
