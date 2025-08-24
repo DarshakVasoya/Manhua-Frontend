@@ -21,7 +21,7 @@ export default function DetailsPage(){
   const raw = params?.name as string | string[];
   const name = Array.isArray(raw) ? raw.join('/') : raw;
   // Only define 'decoded' once
-  const decoded = decodeURIComponent(name || '');
+  const decoded = decodeURIComponent(name || '').replace(/-/g, ' ');
   React.useEffect(() => {
     document.title = `${decoded} | ManhwaGalaxy`;
     let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;

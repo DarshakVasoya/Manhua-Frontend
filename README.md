@@ -1,5 +1,22 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+
+## Updating Production Build
+
+To update your production build and reflect changes:
+
+1. Build the app:
+	```bash
+	npm run build
+	```
+
+2. Reload the server (if using pm2):
+	```bash
+	pm2 reload manhwa-frontend
+	```
+
+This will rebuild your Next.js app and reload the server, making the latest changes live.
+
 ## Getting Started
 
 First, run the development server:

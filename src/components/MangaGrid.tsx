@@ -44,9 +44,10 @@ export default function MangaGrid({ items }: { items: MangaItem[] }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 fade-in">
       {items.map((it, i) => {
-        const title = titleOf(it);
+        // Use _originalName for display, name for URL
+        const displayTitle = typeof it._originalName === 'string' ? it._originalName : titleOf(it);
         const imageUrl = coverOf(it);
-        const mangaUrl = `/details/${encodeURIComponent(title)}`;
+        const mangaUrl = `/details/${typeof it.name === 'string' ? it.name : encodeURIComponent(displayTitle)}`;
         const lastChapter = latestChapterOf(it);
         const postedOn = postedOnOf(it);
         const rating = it?.rating ?? it?.score ?? undefined;
@@ -56,8 +57,8 @@ export default function MangaGrid({ items }: { items: MangaItem[] }) {
 
         return (
           <MangaCardRef
-            key={`${title}-${i}`}
-            title={title || "Untitled"}
+            key={`${displayTitle}-${i}`}
+            title={displayTitle || "Untitled"}
             imageUrl={imageUrl}
             mangaUrl={mangaUrl}
             rating={rating}

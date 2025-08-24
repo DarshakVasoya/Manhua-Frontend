@@ -357,7 +357,11 @@ export default function ChapterNumberOnly() {
               <div key={idx} className="w-full flex flex-col items-center">
                 <div className="relative w-full flex justify-center overflow-hidden">
                   {!loaded && !hadError && (
-                    <div className="w-full h-[600px] max-h-[90vh] shimmer flex items-center justify-center text-[10px] text-[var(--color-text-dim)]">Loading image…</div>
+                    <div className="flex items-center justify-center w-full" style={{ minHeight: '700px' }}>
+                      <div className="shimmer rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] flex items-center justify-center" style={{ width: '100%', maxWidth: '900px', height: '700px', display: 'flex' }}>
+                        <span className="text-[14px] text-[var(--color-text-dim)]">Loading image…</span>
+                      </div>
+                    </div>
                   )}
                   {hadError && !loaded && (
                     <button type="button" onClick={retry} className="w-full h-[400px] max-h-[70vh] flex flex-col gap-2 items-center justify-center text-[11px] font-medium bg-[var(--color-bg-alt)] text-[var(--color-text-dim)] hover:text-white">
@@ -396,8 +400,31 @@ style={{ WebkitUserDrag: 'none' }}
              ))}
           </select>
           <div className="flex items-center gap-2 sm:ml-auto">
-            <button disabled={!prev} onClick={()=> prev && router.push(`/details/${encodeURIComponent(decoded)}/chapters/${prev.chapter_number}`)} className={`px-4 h-9 rounded-md border text-xs font-medium transition ${prev ? 'bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-accent)]' : 'bg-[var(--color-surface)] border-[var(--color-border)] opacity-40 cursor-not-allowed'}`}>Prev</button>
-            <button disabled={!next} onClick={()=> next && router.push(`/details/${encodeURIComponent(decoded)}/chapters/${next.chapter_number}`)} className={`px-4 h-9 rounded-md border text-xs font-medium transition ${next ? 'bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-accent)]' : 'bg-[var(--color-surface)] border-[var(--color-border)] opacity-40 cursor-not-allowed'}`}>Next</button>
+            {/* Mobile: absolute left/right, Desktop: inline */}
+            <button
+              disabled={!prev}
+              onClick={() => prev && router.push(`/details/${encodeURIComponent(decoded)}/chapters/${prev.chapter_number}`)}
+              className={`px-4 h-9 rounded-md border text-xs font-medium transition
+                ${prev ? 'bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-accent)]' : 'bg-[var(--color-surface)] border-[var(--color-border)] opacity-40 cursor-not-allowed'}
+                sm:static sm:order-1
+                fixed left-2 bottom-20 z-20 sm:relative sm:left-0 sm:bottom-0
+                w-20 sm:w-auto
+                block sm:inline-block
+              `}
+              style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
+            >Prev</button>
+            <button
+              disabled={!next}
+              onClick={() => next && router.push(`/details/${encodeURIComponent(decoded)}/chapters/${next.chapter_number}`)}
+              className={`px-4 h-9 rounded-md border text-xs font-medium transition
+                ${next ? 'bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-accent)]' : 'bg-[var(--color-surface)] border-[var(--color-border)] opacity-40 cursor-not-allowed'}
+                sm:static sm:order-2
+                fixed right-2 bottom-20 z-20 sm:relative sm:right-0 sm:bottom-0
+                w-20 sm:w-auto
+                block sm:inline-block
+              `}
+              style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
+            >Next</button>
           </div>
         </div>
       </section>

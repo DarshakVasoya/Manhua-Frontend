@@ -8,10 +8,10 @@ import SubHeader from '@/components/SubHeader';
 const API_BASE = 'https://api.manhwagalaxy.org/manhwa';
 
 export default function CategoryPage() {
+ const router = useRouter();
  const { slug } = useParams<{ slug: string }>();
  // Only define 'category' once
  const category = decodeURIComponent(slug || '');
-  const router = useRouter();
 
   React.useEffect(() => {
     document.title = `${category} Manga - Read ${category} Manhwa Online | ManhwaGalaxy`;
@@ -47,12 +47,19 @@ export default function CategoryPage() {
   }
   const [items, setItems] = useState<MangaItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
+  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : undefined;
+  const initialPage = searchParams ? Number(searchParams.get('page') || 1) : 1;
+  const [page, setPage] = useState(initialPage);
   const [totalPages, setTotalPages] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => { setPage(1); }, [category]);
+  useEffect(() => {
+    setPage(1);
+    if (typeof window !== 'undefined') {
+      router.replace(`/category/${slug}?page=1`);
+    }
+  }, [category, slug, router]);
 
   useEffect(() => {
     let active = true;
@@ -95,24 +102,32 @@ export default function CategoryPage() {
     const windowSize = 5;
     let start = Math.max(1, page - 2);
     let end = Math.min(totalPages, page + 2);
-    if (page <= 3) end = Math.min(totalPages, windowSize);
-    if (page >= totalPages - 2) start = Math.max(1, totalPages - windowSize + 1);
+    if (page <= 3) {
+      end = Math.min(totalPages, windowSize);
+    }
+    if (page >= totalPages - 2) {
+      start = Math.max(1, totalPages - windowSize + 1);
+    }
     const baseBtn = 'px-3 py-2 rounded-md text-xs font-semibold border transition cursor-pointer disabled:cursor-default';
+    const goToPage = (p: number) => {
+      setPage(p);
+      router.push(`/category/${slug}?page=${p}`);
+    };
     if (start > 1) {
       nodes.push(
-        <button key={1} onClick={() => setPage(1)} disabled={page === 1} className={`${baseBtn} ${page === 1 ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)]' : 'bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-accent)]'}`}>1</button>
+        <button key={1} onClick={() => goToPage(1)} disabled={page === 1} className={`${baseBtn} ${page === 1 ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)]' : 'bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-accent)]'}`}>1</button>
       );
       if (start > 2) nodes.push(<span key="s-ellipsis" className="px-2 text-[var(--color-text-dim)]">…</span>);
     }
     for (let i = start; i <= end; i++) {
       nodes.push(
-        <button key={i} onClick={() => setPage(i)} disabled={page === i} className={`${baseBtn} ${page === i ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)]' : 'bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-accent)]'}`}>{i}</button>
+        <button key={i} onClick={() => goToPage(i)} disabled={page === i} className={`${baseBtn} ${page === i ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)]' : 'bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-accent)]'}`}>{i}</button>
       );
     }
     if (end < totalPages) {
       if (end < totalPages - 1) nodes.push(<span key="e-ellipsis" className="px-2 text-[var(--color-text-dim)]">…</span>);
       nodes.push(
-        <button key={totalPages} onClick={() => setPage(totalPages)} disabled={page === totalPages} className={`${baseBtn} ${page === totalPages ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)]' : 'bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-accent)]'}`}>{totalPages}</button>
+        <button key={totalPages} onClick={() => goToPage(totalPages)} disabled={page === totalPages} className={`${baseBtn} ${page === totalPages ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)]' : 'bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-accent)]'}`}>{totalPages}</button>
       );
     }
     return nodes;
@@ -145,7 +160,7 @@ export default function CategoryPage() {
               <MangaCardRef
                 title={item.name}
                 imageUrl={item.cover_image || ""}
-                mangaUrl={`/details/${encodeURIComponent(item.name)}`}
+                mangaUrl={`/details/${item.name.trim().replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '').toLowerCase()}`}
                 rating={item.rating}
                 lastChapter={item.last_chapter}
                 postedOn={item.posted_on || item.updated_at || ''}
@@ -159,26 +174,26 @@ export default function CategoryPage() {
       {totalPages > 1 && !loading && !error && (
         <div className="flex flex-wrap justify-center items-center gap-2 py-10">
           <button
-            onClick={() => setPage(1)}
+            onClick={() => { setPage(1); router.push(`/category/${slug}?page=1`); }}
             disabled={page === 1}
             className="px-3 py-2 rounded-md text-xs font-medium bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] disabled:opacity-40 cursor-pointer disabled:cursor-default"
             aria-label="First page"
           >First</button>
           <button
-            onClick={() => setPage(p => Math.max(1, p - 1))}
+            onClick={() => { setPage(p => Math.max(1, p - 1)); router.push(`/category/${slug}?page=${Math.max(1, page - 1)}`); }}
             disabled={page === 1}
             className="px-3 py-2 rounded-md text-xs font-medium bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] disabled:opacity-40 cursor-pointer disabled:cursor-default"
             aria-label="Previous page"
           >Prev</button>
           {pageButtons()}
           <button
-            onClick={() => setPage(p => (p < totalPages ? p + 1 : p))}
+            onClick={() => { setPage(p => (p < totalPages ? p + 1 : p)); router.push(`/category/${slug}?page=${page < totalPages ? page + 1 : page}`); }}
             disabled={page === totalPages || !hasNextPage}
             className="px-3 py-2 rounded-md text-xs font-medium bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] disabled:opacity-40 cursor-pointer disabled:cursor-default"
             aria-label="Next page"
           >Next</button>
           <button
-            onClick={() => setPage(totalPages)}
+            onClick={() => { setPage(totalPages); router.push(`/category/${slug}?page=${totalPages}`); }}
             disabled={page === totalPages}
             className="px-3 py-2 rounded-md text-xs font-medium bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] disabled:opacity-40 cursor-pointer disabled:cursor-default"
             aria-label="Last page"
