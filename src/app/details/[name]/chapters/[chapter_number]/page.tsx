@@ -141,8 +141,7 @@ export default function ChapterNumberOnly() {
   // Progressive reveal state
   const BATCH_SIZE = 5;
   const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
-  const [autoAdvance, setAutoAdvance] = useState(false); // reserved if we want auto-next later
-  const triggerRef = React.useRef<HTMLImageElement | null>(null);
+  const triggerRef = React.useRef<HTMLDivElement | null>(null);
   // Per-image load + error tracking
   const [loadedMap, setLoadedMap] = useState<Record<number, boolean>>({});
   const [errorMap, setErrorMap] = useState<Record<number, number>>({});
@@ -274,7 +273,7 @@ export default function ChapterNumberOnly() {
     }
   }, [decoded, chapter_number, descriptionText]);
 
-  // IntersectionObserver to grow visibleCount when the trigger image nears viewport
+  // IntersectionObserver to grow visibleCount when the trigger div nears viewport
   useEffect(()=>{
     if(!chapterImages.length) return;
     if(visibleCount >= chapterImages.length) return;
@@ -345,8 +344,8 @@ export default function ChapterNumberOnly() {
           <div className="flex flex-col items-center gap-0">
             {chapterImages.slice(0, visibleCount).map((origSrc, idx)=>{
               const src = overrideSrc[idx] || origSrc;
-              const isTrigger = idx === Math.min(visibleCount, chapterImages.length) - 2 && visibleCount < chapterImages.length;
               const hadError = !!errorMap[idx];
+              const loaded = loadedMap[idx];
               const retry = () => {
                 setErrorMap(m => ({...m, [idx]: (m[idx]||0)+1 }));
                 setLoadedMap(m => ({...m, [idx]: false}));
@@ -354,7 +353,12 @@ export default function ChapterNumberOnly() {
               };
               return (
                 <div key={idx} className="w-full flex flex-col items-center">
-                  <div className="relative w-full flex justify-center overflow-hidden">
+                  <div className="relative w-full flex justify-center overflow-hidden min-h-[400px]">
+                    {!loaded && !hadError && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-bg-alt)]/60">
+                        <span className="text-xs text-[var(--color-text-dim)]">Loading image…</span>
+                      </div>
+                    )}
                     {hadError && (
                       <button type="button" onClick={retry} className="w-full h-[400px] max-h-[70vh] flex flex-col gap-2 items-center justify-center text-[11px] font-medium bg-[var(--color-bg-alt)] text-[var(--color-text-dim)] hover:text-white">
                         <span>Image failed to load</span>
@@ -363,24 +367,21 @@ export default function ChapterNumberOnly() {
                     )}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      ref={el => { if(isTrigger) triggerRef.current = el; if(!isTrigger && triggerRef.current === el) triggerRef.current = null; }}
                       src={src}
                       alt={`${chapterNumLabel} page ${idx+1}`}
-                      loading={idx===0 ? 'eager' : 'lazy'}
-                      {...(idx===0 ? { fetchPriority: 'high' as const } : {})}
+                      loading="lazy"
                       decoding="async"
                       onLoad={() => setLoadedMap(m => ({...m, [idx]: true}))}
                       onError={() => setErrorMap(m => ({...m, [idx]: (m[idx]||0)+1 }))}
-                      className={`max-w-[800px] w-full h-auto object-contain select-none transition-opacity duration-500 ease-out opacity-100 ${hadError ? 'hidden' : ''}`}
-                      // @ts-expect-error vendor style
-                      style={{ WebkitUserDrag: 'none' }}
+                      className={`max-w-[800px] w-full h-auto object-contain select-none transition-opacity duration-500 ease-out ${loaded ? 'opacity-100' : 'opacity-0'} ${hadError ? 'hidden' : ''}`}
+                      // style removed to fix lint error
                     />
                   </div>
                 </div>
               );
             })}
             {visibleCount < chapterImages.length && (
-              <div className="text-[11px] text-[var(--color-text-dim)] py-4">Loading next pages…</div>
+              <div ref={triggerRef} className="w-full h-10 flex items-center justify-center text-[11px] text-[var(--color-text-dim)] py-4">Loading next pages…</div>
             )}
           </div>
         )}
