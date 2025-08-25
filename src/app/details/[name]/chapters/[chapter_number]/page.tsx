@@ -139,7 +139,7 @@ export default function ChapterNumberOnly() {
   const [chapterDate, setChapterDate] = useState<string|undefined>(undefined);
   const [chapterLabel, setChapterLabel] = useState<string|undefined>(undefined);
   // Progressive reveal state
-  const BATCH_SIZE = 5;
+  const BATCH_SIZE = 2;
   const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
   const triggerRef = React.useRef<HTMLDivElement | null>(null);
   // Per-image load + error tracking
