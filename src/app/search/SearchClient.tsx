@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import MangaGrid from "../../components/MangaGrid";
 import Link from "next/link";
+import { AdvancedSearchBar } from "../../components/AdvancedSearchBar";
 
 const API = "https://api.manhwagalaxy.org/manhwa/search";
 
@@ -30,6 +31,9 @@ export default function SearchClient() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showNoResults, setShowNoResults] = useState(false);
+  const [filters, setFilters] = useState({
+    genres: [] as string[],
+  });
 
   useEffect(() => {
     if (!q) {
@@ -45,41 +49,49 @@ export default function SearchClient() {
     setError(null);
     setShowNoResults(false);
 
-    fetch(`${API}?query=${encodeURIComponent(q)}&page=${page}&limit=${limit}`)
-      .then(res => {
-        if (!res.ok) throw new Error(String(res.status));
-        return res.json();
-      })
-      .then(json => {
-        const items: MangaItem[] = Array.isArray(json) ? json : Array.isArray(json?.results) ? json.results : [];
-        setList(items);
+  // Build filter query for new API
+  const genreParam = Array.isArray(filters.genres) ? filters.genres.join(",") : filters.genres;
+  const url = `https://api.manhwagalaxy.org/manhwa/search?query=${encodeURIComponent(q)}&genre=${encodeURIComponent(genreParam)}&page=${page}&limit=${limit}`;
 
-        const genreSet = new Set<string>();
-        items.forEach(it => genresOf(it).forEach(g => genreSet.add(g)));
-        setGenres(Array.from(genreSet).sort((a, b) => a.localeCompare(b)));
-        setShowNoResults(items.length === 0);
-      })
-      .catch(() => {
-        setError("Failed to fetch search results.");
-        setShowNoResults(false);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [q, page]);
+  fetch(url)
+    .then(res => {
+      if (!res.ok) throw new Error(String(res.status));
+      return res.json();
+    })
+    .then(json => {
+      const items: MangaItem[] = Array.isArray(json) ? json : Array.isArray(json?.results) ? json.results : [];
+      setList(items);
+
+      const genreSet = new Set<string>();
+      items.forEach(it => genresOf(it).forEach(g => genreSet.add(g)));
+      setGenres(Array.from(genreSet).sort((a, b) => a.localeCompare(b)));
+      setShowNoResults(items.length === 0);
+    })
+    .catch(() => {
+      setError("Failed to fetch search results.");
+      setShowNoResults(false);
+    })
+    .finally(() => {
+      setLoading(false);
+    });
+  }, [q, page, filters]);
 
   const hasPrev = page > 1;
   const hasNext = list.length >= limit;
 
   return (
-    <main className="container-page max-w-5xl mx-auto py-6">
+    <main className="container-page max-w-5xl mx-auto py-1">
+      <div className="mb-2">
+        
+        <AdvancedSearchBar onSearch={setFilters} />
+      </div>
       {q && (
-        <div className="mb-4 text-lg font-semibold text-[var(--color-accent)]">
+        <div className="mb-2 text-lg font-semibold text-[var(--color-accent)]">
           Showing results for: <span className="font-bold">{q}</span>
         </div>
       )}
       {loading && <div>Loading…</div>}
-  {q && !loading && list.length === 0 && showNoResults && (
+      {q && !loading && list.length === 0 && showNoResults && (
         <div className="flex flex-col items-center justify-center py-12">
           {/* Friendly SVG illustration */}
           <svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">

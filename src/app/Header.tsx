@@ -21,11 +21,21 @@ export default function Header() {
   const tickingRef = React.useRef(false);
   const scrollDirRef = React.useRef<'up'|'down'|null>(null);
 
-  // Hydrate theme from DOM / localStorage
+  // Hydrate theme from localStorage or DOM
   useEffect(() => {
-    const current = (document.documentElement.dataset.theme as 'light'|'dark') || 'dark';
+    let current: 'light' | 'dark' = 'dark';
+    try {
+      const stored = localStorage.getItem('theme');
+      if (stored === 'light' || stored === 'dark') {
+        current = stored;
+      } else {
+        current = (document.documentElement.dataset.theme as 'light'|'dark') || 'dark';
+      }
+    } catch {}
+    document.documentElement.dataset.theme = current;
+    document.body.dataset.theme = current;
     setTheme(current);
-  setMounted(true);
+    setMounted(true);
   }, []);
 
   // Hide on scroll down, show on scroll up (gentle threshold to prevent flicker)
@@ -72,7 +82,9 @@ export default function Header() {
       const next = t === 'dark' ? 'light' : 'dark';
       document.documentElement.dataset.theme = next;
       document.body.dataset.theme = next;
-
+      try {
+        localStorage.setItem('theme', next);
+      } catch {}
       return next;
     });
   };

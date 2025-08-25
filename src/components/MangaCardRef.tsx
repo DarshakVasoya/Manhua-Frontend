@@ -90,7 +90,15 @@ const MangaCardRef: React.FC<MangaCardRefProps> = ({
           </div>
         </Link>
         <div className={styles.bigor}>
+      {/* Make title text smaller */}
+      <style jsx>{`
+        .${styles.tt} {
+          font-size: 1rem !important;
+        }
+      `}</style>
           <Link href={mangaUrl} className={styles.tt} title={title}>{title}</Link>
+      
+
       {displayChapters.length > 0 && (
             <div className={styles.chfiv}>
               {displayChapters.map((ch, i) => (

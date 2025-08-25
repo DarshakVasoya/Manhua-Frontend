@@ -68,6 +68,7 @@ export default function DetailsPage(){
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [bookmarked, setBookmarked] = useState(false);
+  const [bookmarkLimitMsg, setBookmarkLimitMsg] = useState<string | null>(null);
   const [descExpanded, setDescExpanded] = useState(false);
   // Client-side pagination (no URL params)
   const [page, setPage] = useState(1);
@@ -204,18 +205,62 @@ return () => {
 
   useEffect(()=>{ if(decoded) { document.title = `${decoded} | ManhwaGalaxy`; } }, [decoded]);
 
-  // Bookmark (local only)
-  useEffect(()=>{
-    if(!decoded) return;
-    try { setBookmarked(localStorage.getItem('bookmark:'+decoded)==='1'); } catch(e){}
-  },[decoded]);
+  // Bookmark (localStorage array)
+  useEffect(() => {
+    if (!details?.name) return;
+    try {
+      const raw = localStorage.getItem('bookmarks:v1');
+      if (raw) {
+        const arr = JSON.parse(raw);
+        setBookmarked(Array.isArray(arr) && arr.some(b => b.name === details.name));
+      } else {
+        setBookmarked(false);
+      }
+    } catch {
+      setBookmarked(false);
+    }
+  }, [details?.name]);
+
   const toggleBookmark = () => {
+    if (!details) return;
     setBookmarked(b => {
-      const next = !b;
+      let bookmarks: {
+        name: string;
+        cover_image: string;
+        last_chapter: string;
+        rating: string;
+        posted_on: string;
+        addedAt: number;
+      }[] = [];
       try {
-        if(next) localStorage.setItem('bookmark:'+decoded,'1'); else localStorage.removeItem('bookmark:'+decoded);
-      } catch(e){}
-      return next;
+        const raw = localStorage.getItem('bookmarks:v1');
+        if (raw) bookmarks = JSON.parse(raw);
+      } catch {}
+      if (!b) {
+        // Add bookmark
+        if (bookmarks.length >= 50) {
+          setBookmarkLimitMsg('You can only bookmark up to 50 manga. Remove some to add new ones.');
+          return b;
+        }
+        setBookmarkLimitMsg(null);
+        const entry = {
+          name: details.name,
+          cover_image: details.cover_image || '',
+          last_chapter: details.last_chapter || '',
+          rating: details.rating || '',
+          posted_on: details.posted_on || '',
+          addedAt: Date.now()
+        };
+        bookmarks.push(entry);
+        localStorage.setItem('bookmarks:v1', JSON.stringify(bookmarks));
+        return true;
+      } else {
+        // Remove bookmark
+        setBookmarkLimitMsg(null);
+        bookmarks = bookmarks.filter(bm => bm.name !== details.name);
+        localStorage.setItem('bookmarks:v1', JSON.stringify(bookmarks));
+        return false;
+      }
     });
   };
 
@@ -316,9 +361,12 @@ return () => {
                     </div>
                   </React.Suspense>
                 )}
-                <button type="button" onClick={toggleBookmark} className={`px-3 py-2 rounded-md bg-[var(--color-surface)] border text-xs font-medium transition flex items-center gap-2 justify-center ${bookmarked ? 'border-[var(--color-accent)] text-[var(--color-accent)]' : 'border-[var(--color-border)] hover:border-[var(--color-accent)]'}`}> 
+                <button type="button" onClick={toggleBookmark} className={`px-3 py-2 rounded-md bg-[var(--color-surface)] border text-xs font-medium transition flex items-center gap-2 justify-center cursor-pointer ${bookmarked ? 'border-[var(--color-accent)] text-[var(--color-accent)]' : 'border-[var(--color-border)] hover:border-[var(--color-accent)]'}`}> 
                   <span className="inline-block">{bookmarked ? '✅' : '🔖'}</span>{bookmarked ? 'Bookmarked' : 'Bookmark'}
                 </button>
+                {bookmarkLimitMsg && (
+                  <div className="mt-2 text-xs text-red-500 font-semibold">{bookmarkLimitMsg}</div>
+                )}
                 {details.followers && (
                   <div className="text-[11px] text-[var(--color-text-dim)]">Followed by <span className="font-semibold text-[var(--color-text)]">{details.followers}</span> people</div>
                 )}
@@ -352,9 +400,8 @@ return () => {
               {/* Right column */}
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap gap-3 mb-4 text-xs">
-                  {details.last_chapter && <span className="px-2.5 py-1 rounded-md bg-[var(--color-surface)] border border-[var(--color-border)] text-emerald-300 font-medium">{details.last_chapter}</span>}
-                  {details.posted_on && <span className="px-2.5 py-1 rounded-md bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-dim)]">{details.posted_on}</span>}
-                </div>
+                  {details.posted_on && <span className="px-2.5 py-1 rounded-md bg-[var(--color-surface)] border border-[var(--color-border)] text-emerald-300 font-medium">{details.posted_on}</span>}
+                      </div>
                 <table className="w-full text-[11px] md:text-[12px] mb-5 border-separate border-spacing-y-1">
                   <tbody className="align-top">
                     {details.alternative && details.alternative !== details.name && (

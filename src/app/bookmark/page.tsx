@@ -2,6 +2,7 @@
 
 "use client";
 import React, { useEffect, useState } from 'react';
+import MangaCardRef from '../../components/MangaCardRef';
 
 
 interface BookmarkEntry {
@@ -9,6 +10,7 @@ interface BookmarkEntry {
   cover_image?: string;
   rating?: number|string;
   last_chapter?: string;
+  posted_on?: string;
   addedAt: number;
 }
 
@@ -98,25 +100,18 @@ export default function BookmarkPage(){
         </div>
       )}
       {items.length>0 && (
-        <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {items.map(item => (
-            <li key={item.name} className="group relative rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden flex">
-              <a href={`/details/${encodeURIComponent(item.name)}`} className="flex flex-1 items-stretch">
-                {item.cover_image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={item.cover_image} alt={item.name} className="w-28 h-full object-cover border-r border-[var(--color-border)]" loading="lazy" />
-                ) : (
-                  <div className="w-28 h-full bg-[var(--color-bg-alt)] flex items-center justify-center text-[10px] text-[var(--color-text-dim)]">No Image</div>
-                )}
-                <div className="flex-1 p-3 flex flex-col">
-                  <h2 className="text-sm font-semibold mb-1 line-clamp-2 group-hover:text-white transition">{item.name}</h2>
-                  <div className="mt-auto flex items-center gap-2 text-[10px] text-[var(--color-text-dim)]">
-                    {item.rating && <span className="px-1.5 py-0.5 rounded bg-[var(--color-bg-alt)]/60 border border-[var(--color-border)] text-amber-300 font-medium">⭐ {item.rating}</span>}
-                    {item.last_chapter && <span className="px-1.5 py-0.5 rounded bg-[var(--color-bg-alt)]/60 border border-[var(--color-border)] text-emerald-300 font-medium">{item.last_chapter}</span>}
-                  </div>
-                </div>
-              </a>
-              <button onClick={(e)=>{ e.preventDefault(); removeOne(item.name); }} className="absolute top-2 right-2 p-1.5 rounded-md bg-black/40 hover:bg-black/60 backdrop-blur border border-white/10 text-[10px] text-white">Remove</button>
+   <ul className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 fade-in">
+          {items.map((item, idx) => (
+            <li key={item.name} className="list-none">
+              <MangaCardRef
+                title={item.name}
+                imageUrl={item.cover_image || ''}
+                mangaUrl={`/details/${encodeURIComponent(item.name.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '').toLowerCase())}`}
+                rating={item.rating}
+                lastChapter={item.last_chapter}
+                postedOn={item.posted_on}
+                index={idx}
+              />
             </li>
           ))}
         </ul>

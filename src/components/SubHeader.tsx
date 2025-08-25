@@ -10,12 +10,13 @@ const DEFAULT_TAGS = [
   "Latest",
   "Adult",
   "Action",
-  "Adaptation",
+  "Romance",
+  "Fantasy",
+  "Isekai",
+  "Comedy",
   "Adventure",
-  "Animal",
-  "Bloody",
-  "Business",
-  "All Manga",
+  "Drama",
+  "Supernatural"
 ];
 
 export default function SubHeader({ tags = DEFAULT_TAGS, className = "" }: SubHeaderProps) {
