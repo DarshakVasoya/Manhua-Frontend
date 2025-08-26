@@ -69,57 +69,58 @@ const MangaCardRef: React.FC<MangaCardRefProps> = ({
     return 'Chapter ' + s;
   };
   return (
-    <div className={styles.bsx}>
-      <div className={styles.bs}>
-        <Link href={mangaUrl} className={styles.limit} title={title}>
-          {!imgLoaded && <div className={styles.skeleton} />}
-          <Image
-            src={imageUrl || "/default.jpg"}
-            alt={title}
-            width={180}
-            height={240}
-            onLoad={() => setImgLoaded(true)}
-            className={styles.coverImg}
-            priority={typeof index === 'number' && index < 8}
-          />
-          <div className={styles.ply}>
-            {rating !== undefined && <span className={styles.rating}>⭐ {rating}</span>}
-            {typeLabel && <span className={styles.type}>{typeLabel}</span>}
-            {colored && <span className={styles.col}>COLORED</span>}
-            {hot && <span className={styles.hot}>HOT</span>}
-          </div>
-        </Link>
-        <div className={styles.bigor}>
-      {/* Make title text smaller */}
-      <style jsx>{`
-        .${styles.tt} {
-          font-size: 1rem !important;
-        }
-      `}</style>
-          <Link href={mangaUrl} className={styles.tt} title={title}>{title}</Link>
-      
-
-      {displayChapters.length > 0 && (
-            <div className={styles.chfiv}>
-              {displayChapters.map((ch, i) => (
-                <Link
-                  key={i}
-                  href={makeChapterUrl(ch.number)} // force chapter page URL
-                  className={styles.ephiv}
-                  title={formatChapterLabel(ch.number)}
-                >
-                  <span className={styles.fivchap}>{formatChapterLabel(ch.number)}</span>
-                  <span className={styles.metaWrap}>
-                    {postedOn && i === 0 && <span className={styles.fivtime}>{postedOn}</span>}
-                    {ch.time && <span className={styles.fivtime}>{ch.time}</span>}
-                  </span>
-                </Link>
-              ))}
+    <>
+     
+      <div className={styles.bsx}>
+        <div className={styles.bs}>
+          <Link href={mangaUrl} className={styles.limit} title={title}>
+            {!imgLoaded && <div className={styles.skeleton} />}
+            <Image
+              src={imageUrl || "/default.jpg"}
+              alt={`${title} - ManhwaGalaxy (Manga Galaxy)`}
+              width={180}
+              height={240}
+              onLoad={() => setImgLoaded(true)}
+              className={styles.coverImg}
+              priority={typeof index === 'number' && index < 8}
+            />
+            <div className={styles.ply}>
+              {rating !== undefined && <span className={styles.rating}>⭐ {rating}</span>}
+              {typeLabel && <span className={styles.type}>{typeLabel}</span>}
+              {colored && <span className={styles.col}>COLORED</span>}
+              {hot && <span className={styles.hot}>HOT</span>}
             </div>
-          )}
+          </Link>
+          <div className={styles.bigor}>
+            {/* Make title text smaller */}
+            <style jsx>{`
+              .${styles.tt} {
+                font-size: 1rem !important;
+              }
+            `}</style>
+            <Link href={mangaUrl} className={styles.tt} title={title}>{title}</Link>
+            {displayChapters.length > 0 && (
+              <div className={styles.chfiv}>
+                {displayChapters.map((ch, i) => (
+                  <Link
+                    key={i}
+                    href={makeChapterUrl(ch.number)} // force chapter page URL
+                    className={styles.ephiv}
+                    title={formatChapterLabel(ch.number)}
+                  >
+                    <span className={styles.fivchap}>{formatChapterLabel(ch.number)}</span>
+                    <span className={styles.metaWrap}>
+                      {postedOn && i === 0 && <span className={styles.fivtime}>{postedOn}</span>}
+                      {ch.time && <span className={styles.fivtime}>{ch.time}</span>}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

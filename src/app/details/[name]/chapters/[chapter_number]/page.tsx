@@ -311,8 +311,8 @@ export default function ChapterNumberOnly() {
   }, [prev, next, decoded, chapterImages.length, visibleCount, router]);
 
   return (
-  <main className="container-page max-w-2xl mx-auto py-10">
-      <nav className="text-xs mb-6 text-[var(--color-text-dim)] flex gap-1 items-center">
+  <main className="container-page max-w-2xl mx-auto py-10" role="main">
+      <nav className="text-xs mb-6 text-[var(--color-text-dim)] flex gap-1 items-center" aria-label="Breadcrumb">
        <Link href="/" className="hover:text-white">
   Home
 </Link>
@@ -322,19 +322,26 @@ export default function ChapterNumberOnly() {
       <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">{chapterNumLabel}</h1>
       <p className="text-xs text-[var(--color-text-dim)] mb-6 leading-relaxed">{descriptionText}</p>
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
-        <select value={`/details/${encodeURIComponent(decoded)}/chapters/${chapter_number}`} onChange={onSelect} className="px-3 h-9 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] text-xs font-medium focus:outline-none focus:border-[var(--color-accent)] w-full sm:w-auto min-w-[200px]">
-          <option value="" disabled>{loadingChapters ? 'Loading…' : 'Select Chapter'}</option>
-           {chaptersDesc.map((c, idx) => (
-             <option key={`${c.chapter_number}-${idx}`} value={`/details/${encodeURIComponent(decoded)}/chapters/${c.chapter_number}`}>Chapter {c.chapter_number}</option>
-           ))}
-        </select>
+      <label htmlFor="chapter-select" className="sr-only">Select Chapter</label>
+<select
+  id="chapter-select"
+  aria-label="Select Chapter"
+  value={`/details/${encodeURIComponent(decoded)}/chapters/${chapter_number}`}
+  onChange={onSelect}
+  className="px-3 h-9 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] text-xs font-medium focus:outline-none focus:border-[var(--color-accent)] w-full sm:w-auto min-w-[200px]"
+>
+  <option value="" disabled>{loadingChapters ? 'Loading…' : 'Select Chapter'}</option>
+  {chaptersDesc.map((c, idx) => (
+    <option key={`${c.chapter_number}-${idx}`} value={`/details/${encodeURIComponent(decoded)}/chapters/${c.chapter_number}`}>Chapter {c.chapter_number}</option>
+  ))}
+</select>
         <div className="flex items-center gap-2 sm:ml-auto">
           <button disabled={!prev} onClick={()=> prev && router.push(`/details/${encodeURIComponent(decoded)}/chapters/${prev.chapter_number}`)} className={`px-4 h-9 rounded-md border text-xs font-medium transition ${prev ? 'bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-accent)]' : 'bg-[var(--color-surface)] border-[var(--color-border)] opacity-40 cursor-not-allowed'}`}>Prev</button>
           <button disabled={!next} onClick={()=> next && router.push(`/details/${encodeURIComponent(decoded)}/chapters/${next.chapter_number}`)} className={`px-4 h-9 rounded-md border text-xs font-medium transition ${next ? 'bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-accent)]' : 'bg-[var(--color-surface)] border-[var(--color-border)] opacity-40 cursor-not-allowed'}`}>Next</button>
         </div>
   {/* Total count removed as requested */}
       </div>
-      <section className="mt-6">
+      <section className="mt-6" aria-label="Chapter Images">
         {/* Chapter label & date removed as requested */}
         {chapterLoading ? (
           <div className="text-sm text-[var(--color-text-dim)] py-8 text-center">Loading images, please wait…</div>
@@ -368,7 +375,8 @@ export default function ChapterNumberOnly() {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={src}
-                      alt={`${chapterNumLabel} page ${idx+1}`}
+                      alt={`Manga page ${idx+1} of chapter ${chapter_number} from ${decoded}`}
+                      aria-label={`Manga page ${idx+1}`}
                       loading="lazy"
                       decoding="async"
                       onLoad={() => setLoadedMap(m => ({...m, [idx]: true}))}
@@ -387,12 +395,19 @@ export default function ChapterNumberOnly() {
         )}
         {/* Bottom navigation */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mt-10">
-          <select value={`/details/${encodeURIComponent(decoded)}/chapters/${chapter_number}`} onChange={onSelect} className="px-3 h-9 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] text-xs font-medium focus:outline-none focus:border-[var(--color-accent)] w-full sm:w-auto min-w-[200px]">
-            <option value="" disabled>{loadingChapters ? 'Loading…' : 'Select Chapter'}</option>
-             {chaptersDesc.map((c, idx) => (
-               <option key={`${c.chapter_number}-${idx}`} value={`/details/${encodeURIComponent(decoded)}/chapters/${c.chapter_number}`}>Chapter {c.chapter_number}</option>
-             ))}
-          </select>
+       <label htmlFor="chapter-select" className="sr-only">Select Chapter</label>
+<select
+  id="chapter-select"
+  aria-label="Select Chapter"
+  value={`/details/${encodeURIComponent(decoded)}/chapters/${chapter_number}`}
+  onChange={onSelect}
+  className="px-3 h-9 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] text-xs font-medium focus:outline-none focus:border-[var(--color-accent)] w-full sm:w-auto min-w-[200px]"
+>
+  <option value="" disabled>{loadingChapters ? 'Loading…' : 'Select Chapter'}</option>
+  {chaptersDesc.map((c, idx) => (
+    <option key={`${c.chapter_number}-${idx}`} value={`/details/${encodeURIComponent(decoded)}/chapters/${c.chapter_number}`}>Chapter {c.chapter_number}</option>
+  ))}
+</select>
           <div className="flex items-center gap-2 sm:ml-auto">
             {/* Mobile: absolute left/right, Desktop: inline */}
             <button

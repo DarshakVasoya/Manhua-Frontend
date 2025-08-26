@@ -1,3 +1,14 @@
+
+🔹 **Title**
+
+ManhwaGalaxy – Read Manga & Manhwa Online (Ad-Free)
+
+🔹 **Meta Description**
+
+Read your favorite manga and manhwa without ads on ManhwaGalaxy. Fast, simple, and ad-free reading experience with the latest chapters updated daily.
+
+---
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 

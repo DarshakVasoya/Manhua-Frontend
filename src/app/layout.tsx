@@ -4,8 +4,8 @@ import Header from './Header';
 import OfflineBanner from "@/components/OfflineBanner";
 
 export const metadata: Metadata = {
-  title: "ManhwaGalaxy - Read Free Manhwa Online",
-  description: "Discover and read the latest manhwa chapters online for free at ManhwaGalaxy. Browse genres, bookmark favorites, and stay updated with new releases.",
+  title: "ManhwaGalaxy – Read Manga & Manhwa Online (Ad-Free)",
+  description:"Read your favorite manga and manhwa at ManhwaGalaxy (also known as Manwha Galaxy or Manga Galaxy). Ad-free, fast, and updated with the latest chapters."
 };
 
 export const viewport: Viewport = {
@@ -26,6 +26,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+  {/* Canonical URL for SEO */}
+  <link rel="canonical" href="https://manhwagalaxy.org" />
         {/* Inline theme init to avoid flash */}
         <script
           dangerouslySetInnerHTML={{

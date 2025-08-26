@@ -4,7 +4,12 @@ import React from "react";
 
 export default function NotFound() {
   return (
-    <main className="container-page max-w-xl mx-auto py-20 flex flex-col items-center justify-center">
+    <>
+      <head>
+        <meta name="description" content="404 - Page Not Found. The page you are looking for does not exist on ManhwaGalaxy." />
+        <meta name="robots" content="noindex" />
+      </head>
+      <main className="container-page max-w-xl mx-auto py-20 flex flex-col items-center justify-center">
       <div className="mb-8">
         {/* Animated SVG: Modern 404 illustration with color and motion */}
         <svg width="220" height="180" viewBox="0 0 220 180" fill="none" xmlns="http://www.w3.org/2000/svg" className="animate-bounce-slow">
@@ -34,5 +39,6 @@ export default function NotFound() {
         }
       `}</style>
     </main>
-  );
+   </>)
+   ;
 }

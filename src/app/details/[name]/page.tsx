@@ -41,7 +41,7 @@ export default function DetailsPage(){
     meta.content = `Read ${decoded} manga online at ManhwaGalaxy. Discover chapters, bookmark your favorites, and stay updated with the latest releases.`;
   }, [decoded]);
  
-
+  
 
   
   interface MangaDetails {
@@ -221,6 +221,21 @@ return () => {
     }
   }, [details?.name]);
 
+ // JSON-LD structured data for SEO
+  const jsonLd = details ? {
+    "@context": "https://schema.org",
+    "@type": "Book",
+    "name": details.name || decoded,
+    "image": details.cover_image || "",
+    "url": `https://manhwagalaxy.org/details/${hyphenName}`,
+    "author": details.author || "Unknown",
+    "genre": details.genres || [],
+    "description": details.description || "Read manga online at ManhwaGalaxy.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "ManhwaGalaxy"
+    }
+  } : null;
   const toggleBookmark = () => {
     if (!details) return;
     setBookmarked(b => {
@@ -313,8 +328,15 @@ return () => {
   };
 
   return (
-    <main className="container-page max-w-5xl mx-auto py-6">
-      <nav className="text-xs mb-4 text-[var(--color-text-dim)] flex gap-1">
+  <main className="container-page max-w-5xl mx-auto py-6" role="main">
+      {/* SEO: Inject JSON-LD structured data */}
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+  <nav className="text-xs mb-4 text-[var(--color-text-dim)] flex gap-1" aria-label="Breadcrumb">
         <Link href="/" className="hover:text-white">Home</Link>
         <span>/</span>
         <span className="truncate max-w-[320px]" title={decoded}>{decoded}</span>
@@ -341,13 +363,13 @@ return () => {
           </div>
         </div>
       )}
-      {!loading && details && (() => {
+  {!loading && details && (() => {
         const ratingNum = parseFloat(details.rating ?? "") || 0;
         const ratingPct = Math.max(0, Math.min(100, (ratingNum/10)*100));
         const firstChapter = chapters.length > 0 ? chapters[0] : null;
         const latestChapter = chapters.length > 0 ? chapters[chapters.length-1] : null;
         return (
-          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-alt)]/70 p-6 flex flex-col gap-8 mb-10 backdrop-blur-sm relative">
+          <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-alt)]/70 p-6 flex flex-col gap-8 mb-10 backdrop-blur-sm relative" aria-label="Manga Details">
             <div className="absolute inset-0 pointer-events-none rounded-xl border border-transparent [mask-image:linear-gradient(to_bottom,black,rgba(0,0,0,.6))]" />
             <div className="flex flex-col md:flex-row md:items-start gap-10">
               {/* Left column */}
@@ -356,7 +378,7 @@ return () => {
                   <React.Suspense fallback={<div className="w-56 aspect-[3/4.3] rounded-lg border border-[var(--color-border)] shimmer" />}>
                     <div className="relative overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <Image src={details.cover_image || "/default.jpg"} alt={details.name} className="w-full h-auto object-cover" width={220} height={320} />
+                      <Image src={details.cover_image || "/default.jpg"} alt={`Cover image for ${details.name} - ManhwaGalaxy`} className="w-full h-auto object-cover" width={220} height={320} />
                       {details.colored && <span className="absolute top-2 left-2 text-[10px] bg-[var(--color-accent)] text-white font-semibold px-2 py-1 rounded-md flex items-center gap-1"><span>Color</span></span>}
                     </div>
                   </React.Suspense>
@@ -437,7 +459,7 @@ return () => {
                 )}
               </div>
             </div>
-          </div>
+          </section>
         );
       })()}
       {!loading && chapters.length > 0 && (

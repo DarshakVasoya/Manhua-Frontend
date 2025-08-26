@@ -119,13 +119,28 @@ export default function HomeClient() {
   };
 
   return (
-    <main className="container-page">
+  <main className="container-page" role="main">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: `{
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "ManhwaGalaxy",
+        "url": "https://manhwagalaxy.org",
+        "description": "Read your favorite manga and manhwa without ads on ManhwaGalaxy. Fast, simple, and ad-free reading experience with the latest chapters updated daily.",
+        "publisher": {
+          "@type": "Organization",
+          "name": "ManhwaGalaxy",
+          "url": "https://manhwagalaxy.org"
+        }
+      }` }} />
       {!isOnline && (
         <div className="mb-4 p-4 rounded-lg border border-yellow-400 bg-yellow-50 text-yellow-700 flex items-center justify-center">
           <span className="font-semibold text-base mr-2">You are offline.</span>
           <span>Please check your internet connection.</span>
         </div>
       )}
+      <h1 className="sr-only" style={{fontSize: '2rem', fontWeight: 700, margin: '1.5rem 0 1rem', textAlign: 'center', color: 'var(--color-accent)'}}>
+        ManhwaGalaxy – Read Manga & Manhwa Online (Ad-Free)
+      </h1>
       <div className="mb-5">
         <SubHeader />
       </div>
@@ -162,18 +177,20 @@ export default function HomeClient() {
       )}
       {/* Pagination */}
       {totalPages > 1 && !loading && !error && (
-        <div className="flex flex-wrap justify-center items-center gap-2 py-10">
+        <nav className="flex flex-wrap justify-center items-center gap-2 py-10" aria-label="Pagination Navigation">
           <Link
             href={`?page=1`}
             className={`px-3 py-2 rounded-md text-xs font-medium bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] ${page === 1 ? 'opacity-40 cursor-default pointer-events-none' : 'cursor-pointer'}`}
             aria-disabled={page === 1}
             tabIndex={page === 1 ? -1 : 0}
+            aria-label="First Page"
           >First</Link>
           <Link
             href={`?page=${Math.max(1, page - 1)}`}
             className={`px-3 py-2 rounded-md text-xs font-medium bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] ${page === 1 ? 'opacity-40 cursor-default pointer-events-none' : 'cursor-pointer'}`}
             aria-disabled={page === 1}
             tabIndex={page === 1 ? -1 : 0}
+            aria-label="Previous Page"
           >Prev</Link>
           {pageButtons()}
           <Link
@@ -181,15 +198,16 @@ export default function HomeClient() {
             className={`px-3 py-2 rounded-md text-xs font-medium bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] ${(page === totalPages || !hasNextPage) ? 'opacity-40 cursor-default pointer-events-none' : 'cursor-pointer'}`}
             aria-disabled={page === totalPages || !hasNextPage}
             tabIndex={(page === totalPages || !hasNextPage) ? -1 : 0}
+            aria-label="Next Page"
           >Next</Link>
           <Link
             href={`?page=${totalPages}`}
             className={`px-3 py-2 rounded-md text-xs font-medium bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] ${page === totalPages ? 'opacity-40 cursor-default pointer-events-none' : 'cursor-pointer'}`}
             aria-disabled={page === totalPages}
             tabIndex={page === totalPages ? -1 : 0}
+            aria-label="Last Page"
           >Last</Link>
-         
-        </div>
+        </nav>
       )}
     </main>
   );
