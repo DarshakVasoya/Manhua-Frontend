@@ -116,6 +116,8 @@ export default function Header() {
           <nav className={`gap-6 ${open ? 'flex flex-col absolute top-full left-0 w-full bg-[var(--color-surface)] border-t border-[var(--color-border)] z-50 p-4' : 'hidden md:flex'}`}>
             <Link href="/" className="text-sm font-semibold text-[var(--color-text-dim)] hover:text-[var(--color-text)]">Home</Link>
             <Link href="/bookmark" className="text-sm font-semibold text-[var(--color-text-dim)] hover:text-[var(--color-text)]">Bookmark</Link>
+        <Link href="/contact" className="text-sm font-semibold text-[var(--color-text-dim)] hover:text-[var(--color-text)]">Contact Us</Link>
+        
           </nav>
         </div>
         {/* Right controls for mobile and desktop */}

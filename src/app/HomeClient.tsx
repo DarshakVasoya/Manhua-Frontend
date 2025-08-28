@@ -35,7 +35,7 @@ export default function HomeClient() {
     };
   }, []);
   useEffect(() => {
-    document.title = "ManhwaGalaxy - Read Free Manhwa Online";
+  document.title = "ManhwaGalaxy – Read Manga & Manhwa Online (Ad-Free)";
     let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
     if (!meta) {
       meta = document.createElement('meta') as HTMLMetaElement;
