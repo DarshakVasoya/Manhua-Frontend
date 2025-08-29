@@ -75,7 +75,7 @@ gtag('config', 'G-YXWMQFBJ8G');`
   <OfflineBanner />
         <div id="reading-progress" />
         <Header />
-        <div className="flex-1 w-full pt-2 pb-4 md:pt-2 md:pb-5">{children}</div>
+  <div className="flex-1 w-full pt-1 pb-4 md:pt-1 md:pb-5">{children}</div>
         <footer className="mt-auto py-8 text-center text-xs text-[var(--color-text-dim)] border-t border-[var(--color-border)]">
           <div className="container-page flex flex-col gap-2">
             <p>&copy; {new Date().getFullYear()} ManhwaGalaxy. Unofficial fan site.</p>

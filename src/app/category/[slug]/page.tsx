@@ -141,12 +141,10 @@ export default function CategoryPage() {
 
   return (
     <main className="container-page">
-      <div className="mb-5">
+      <div className="mb-1">
         <SubHeader />
       </div>
-      {category && category !== 'Latest' && category !== 'All Manga' && (
-        <h2 className="text-sm font-semibold mb-4 text-[var(--color-text-dim)]">Genre: <span className="text-[var(--color-text)]">{category}</span></h2>
-      )}
+      
       {error ? (
         <div className="mb-6 p-4 rounded-lg border border-red-400 bg-red-50 text-red-700 flex flex-col items-center">
           <span className="font-semibold text-base mb-2">Oops! Something went wrong.</span>
@@ -159,7 +157,7 @@ export default function CategoryPage() {
       ) : loading ? (
         renderSkeletons()
       ) : (
-        <ul className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 fade-in">
+  <ul className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 fade-in">
           {items.map((item: MangaItem) => (
             <li key={item.name} className="list-none">
               <MangaCardRef
@@ -171,6 +169,7 @@ export default function CategoryPage() {
                 postedOn={item.posted_on || item.updated_at || ''}
                 colored={false}
                 hot={false}
+    chapterLabelStyle="number"
               />
             </li>
           ))}

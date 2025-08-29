@@ -141,7 +141,7 @@ export default function HomeClient() {
       <h1 className="sr-only" style={{fontSize: '2rem', fontWeight: 700, margin: '1.5rem 0 1rem', textAlign: 'center', color: 'var(--color-accent)'}}>
         ManhwaGalaxy – Read Manga & Manhwa Online (Ad-Free)
       </h1>
-      <div className="mb-5">
+      <div className="mb-1">
         <SubHeader />
       </div>
       {error ? (

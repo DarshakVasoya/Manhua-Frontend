@@ -15,6 +15,9 @@ const nextConfig = {
       },
     ],
   },
+    // allowedDevOrigins: ['http://165.232.60.4'], // Add any origins you need
+
+
 };
 
 module.exports = nextConfig;

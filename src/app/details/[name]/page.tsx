@@ -328,7 +328,7 @@ return () => {
   };
 
   return (
-  <main className="container-page max-w-5xl mx-auto py-6" role="main">
+  <main className="container-page max-w-5xl mx-auto py-1" role="main">
       {/* SEO: Inject JSON-LD structured data */}
       {jsonLd && (
         <script
@@ -336,8 +336,8 @@ return () => {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-  <nav className="text-xs mb-4 text-[var(--color-text-dim)] flex gap-1" aria-label="Breadcrumb">
-        <Link href="/" className="hover:text-white">Home</Link>
+  <nav className="text-xs mb-1 text-[var(--color-text-dim)] flex gap-1" aria-label="Breadcrumb">
+        <Link href="/" className="text-[var(--color-accent)] hover:underline focus:underline">Home</Link>
         <span>/</span>
         <span className="truncate max-w-[320px]" title={decoded}>{decoded}</span>
       </nav>
@@ -351,7 +351,7 @@ return () => {
           >Retry</button>
         </div>
       ) : null}
-  <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-5">{decoded}</h1>
+  <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">{decoded}</h1>
       {loading && (
         <div className="grid md:grid-cols-[220px_1fr] gap-8 mb-10">
           <div className="w-56 aspect-[3/4.3] rounded-lg border border-[var(--color-border)] shimmer" />
@@ -463,8 +463,8 @@ return () => {
         );
       })()}
       {!loading && chapters.length > 0 && (
-        <div className="mb-12">
-          <div className="flex items-center justify-between mb-3 gap-4">
+        <div className="mb-1">
+          <div className="flex items-center justify-between mb-1 gap-4">
             <h2 className="text-lg font-semibold">Chapters <span className="text-[var(--color-text-dim)] font-normal">({chapters.length})</span></h2>
             {renderPagination()}
           </div>

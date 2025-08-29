@@ -130,7 +130,7 @@ export default function ChapterNumberOnly() {
   };
 
   const chapterNumLabel = `Chapter ${chapter_number}`;
-  const descriptionText = `Read ${decoded} ${chapterNumLabel} online at ManhwaGalaxy. Stay updated with the latest chapters.`;
+  const descriptionText = `Read ${decoded} online at ManhwaGalaxy. Stay updated with the latest chapters.`;
 
   // Chapter images/content state
   const [chapterLoading, setChapterLoading] = useState(false);
@@ -236,8 +236,8 @@ export default function ChapterNumberOnly() {
         }
         if(!found || aborted) return;
         chapterImageCache[nextKey] = found;
-        // Warm image cache quietly with limited concurrency (up to 4 at a time)
-        const concurrency = 4;
+        // Warm image cache quietly with limited concurrency (up to 2 at a time)
+        const concurrency = 2;
         const queue = [...found.images];
         const workers: Promise<void>[] = [];
         const fetchImage = async (imgUrl: string) => {
@@ -311,13 +311,19 @@ export default function ChapterNumberOnly() {
   }, [prev, next, decoded, chapterImages.length, visibleCount, router]);
 
   return (
-  <main className="container-page max-w-2xl mx-auto py-10" role="main">
-      <nav className="text-xs mb-6 text-[var(--color-text-dim)] flex gap-1 items-center" aria-label="Breadcrumb">
-       <Link href="/" className="hover:text-white">
+  <main className="container-page max-w-2xl mx-auto pt-2 pb-6" role="main">
+      <nav className="text-xs mb-2 text-[var(--color-text-dim)] flex gap-1 items-center" aria-label="Breadcrumb">
+       <Link href="/" className="text-[var(--color-accent)] hover:underline focus:underline">
   Home
 </Link>
         <span>/</span>
-        <a href={`/details/${encodeURIComponent(decoded)}`} className="hover:text-white truncate max-w-[240px]" title={decoded}>{decoded}</a>
+        <a
+          href={`/details/${encodeURIComponent(decoded)}`}
+          className="text-[var(--color-accent)] hover:underline focus:underline truncate max-w-[240px]"
+          title={decoded}
+        >
+          {decoded}
+        </a>
       </nav>
       <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">{chapterNumLabel}</h1>
       <p className="text-xs text-[var(--color-text-dim)] mb-6 leading-relaxed">{descriptionText}</p>

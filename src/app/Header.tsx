@@ -3,19 +3,41 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from 'next/navigation';
-import SearchBar from "../components/SearchBar";
+// Removed inline SearchBar in favor of a search icon that navigates to /search
 
 
 export interface Category { label: string; slug?: string; }
 export const headerCategories: Category[] = [];
 
 export default function Header() {
+  // ...existing code...
   const [open, setOpen] = useState(false);
-  const [searchModal, setSearchModal] = useState(false);
+  // const [searchModal, setSearchModal] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>(() => 'dark');
   const [hidden, setHidden] = useState(false);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
+  // Refs for outside-click detection without relying on DOM ids
+  const navRef = React.useRef<HTMLElement | null>(null);
+  const menuBtnRef = React.useRef<HTMLButtonElement | null>(null);
+
+  // Close menu when clicking outside (mobile only)
+  useEffect(() => {
+    if (!open) return;
+    const handleClick = (e: MouseEvent) => {
+      const nav = navRef.current;
+      const menuBtn = menuBtnRef.current;
+      // If click is outside nav and not on menu button, close menu
+      if (
+        nav && !nav.contains(e.target as Node) &&
+        !(menuBtn && menuBtn.contains(e.target as Node))
+      ) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [open]);
 
   const lastScrollRef = React.useRef(0);
   const tickingRef = React.useRef(false);
@@ -90,8 +112,8 @@ export default function Header() {
   };
 
   return (
-    <div className={`sticky top-0 z-40 backdrop-blur border-b border-[var(--color-border)] transition-transform duration-300 ease-out will-change-transform ${mounted ? (hidden ? '-translate-y-full opacity-0' : 'translate-y-0') : 'translate-y-0'} `} style={{background: 'var(--color-header-backdrop)'}}>
-      <div className="container-page flex items-center pt-3 pb-2 min-w-0">
+  <div className={`sticky top-0 z-40 backdrop-blur border-b border-[var(--color-border)] transition-transform duration-300 ease-out will-change-transform ${mounted ? (hidden ? '-translate-y-full opacity-0' : 'translate-y-0') : 'translate-y-0'} `} style={{background: 'var(--color-header-backdrop)'}}>
+  <div className="container-page flex items-center pt-3 pb-1 min-w-0">
         {/* Logo and nav on left */}
         <div className="flex items-center gap-4 flex-1">
           <Link href="/" className="flex items-center gap-2 group" aria-label="Go to homepage">
@@ -113,28 +135,22 @@ export default function Header() {
               data-logo="light"
             />
           </Link>
-          <nav className={`gap-6 ${open ? 'flex flex-col absolute top-full left-0 w-full bg-[var(--color-surface)] border-t border-[var(--color-border)] z-50 p-4' : 'hidden md:flex'}`}>
-            <Link href="/" className="text-sm font-semibold text-[var(--color-text-dim)] hover:text-[var(--color-text)]">Home</Link>
-            <Link href="/bookmark" className="text-sm font-semibold text-[var(--color-text-dim)] hover:text-[var(--color-text)]">Bookmark</Link>
-        <Link href="/contact" className="text-sm font-semibold text-[var(--color-text-dim)] hover:text-[var(--color-text)]">Contact Us</Link>
-        
+          <nav ref={navRef as React.RefObject<HTMLDivElement>} className={`gap-6 ${open ? 'flex flex-col absolute top-full left-0 w-full bg-[var(--color-surface)] border-t border-[var(--color-border)] z-50 p-4' : 'hidden md:flex'}`}>
+            <Link href="/" className="text-sm font-semibold text-[var(--color-text-dim)] hover:text-[var(--color-text)]" onClick={() => setOpen(false)}>Home</Link>
+            <Link href="/bookmark" className="text-sm font-semibold text-[var(--color-text-dim)] hover:text-[var(--color-text)]" onClick={() => setOpen(false)}>Bookmark</Link>
+            <Link href="/contact" className="text-sm font-semibold text-[var(--color-text-dim)] hover:text-[var(--color-text)]" onClick={() => setOpen(false)}>Contact Us</Link>
           </nav>
         </div>
         {/* Right controls for mobile and desktop */}
         <div className="flex items-center gap-2 sm:gap-4">
-          {/* Desktop search bar */}
-          <div className="hidden sm:flex">
-            <SearchBar className="w-full max-w-xs sm:max-w-[180px] md:max-w-[240px] lg:max-w-[320px]" />
-          </div>
-          {/* Search icon for mobile */}
-          <button
-            type="button"
-            className="flex sm:hidden items-center justify-center rounded-full w-10 h-10 border border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)]"
-            aria-label="Open search"
-            onClick={() => setSearchModal(true)}
+          {/* Search icon (all screens) navigates to /search */}
+          <Link
+            href="/search"
+            aria-label="Go to search"
+            className="flex items-center justify-center rounded-full w-10 h-10 border border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)]"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          </button>
+          </Link>
           {/* Theme button */}
           <button
             type="button"
@@ -168,6 +184,7 @@ export default function Header() {
           </button>
           {/* Menu icon for mobile */}
           <button
+            ref={menuBtnRef}
             aria-label="Toggle menu"
             onClick={() => setOpen(o => !o)}
             className="md:hidden rounded-full w-10 h-10 flex items-center justify-center border border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-white"
@@ -180,20 +197,7 @@ export default function Header() {
           </button>
         </div>
       </div>
-      {/* Mobile search modal */}
-      {searchModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center" onClick={() => setSearchModal(false)}>
-          <div className="bg-[var(--color-surface)] rounded-lg shadow-lg p-4 w-full max-w-sm mx-4" onClick={e => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-2">
-              <span className="font-semibold text-lg">Search</span>
-              <button onClick={() => setSearchModal(false)} aria-label="Close search" className="text-[var(--color-text-dim)] hover:text-[var(--color-text)] p-1">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="4" x2="16" y2="16"/><line x1="16" y1="4" x2="4" y2="16"/></svg>
-              </button>
-            </div>
-            <SearchBar className="w-full" />
-          </div>
-        </div>
-      )}
+  {/* Removed modal search; using dedicated /search page */}
     </div>
   );
 }

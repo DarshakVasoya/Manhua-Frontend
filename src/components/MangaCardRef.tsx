@@ -17,6 +17,8 @@ export interface MangaCardRefProps {
   colored?: boolean;
   hot?: boolean;
   index?: number;
+  // Controls how the chapter label is displayed: 'full' => "Chapter 12", 'number' => "12"
+  chapterLabelStyle?: 'full' | 'number';
 }
 
 const MangaCardRef: React.FC<MangaCardRefProps> = ({
@@ -31,6 +33,7 @@ const MangaCardRef: React.FC<MangaCardRefProps> = ({
   colored = false,
   hot = false,
   index,
+  chapterLabelStyle = 'full',
 }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
 
@@ -57,6 +60,10 @@ const MangaCardRef: React.FC<MangaCardRefProps> = ({
       
       const formatChapterLabel = (raw: number | string) => {
     const s = String(raw).trim();
+    if (chapterLabelStyle === 'number') {
+      const m = s.match(/([0-9]+(?:\.[0-9]+)?)/);
+      return m ? m[1] : s.replace(/^chapter\s*/i, '').replace(/^ch\.?\s*/i, '').trim();
+    }
     // If already starts with 'chapter' keep it as single instance (normalize capitalization)
     if (/^chapter\b/i.test(s)) {
       // Capitalize first letter only
