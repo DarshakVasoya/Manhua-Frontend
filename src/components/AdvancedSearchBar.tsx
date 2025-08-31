@@ -151,7 +151,7 @@ export const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({ initialQue
     setShowSuggestions(false);
     setActiveSugIndex(-1);
     // Navigate directly to the details page for the selected manga (prefer slug)
-  const href = `/details/${encodeURIComponent(value)}`;
+  const href = `/details/${encodeURIComponent(item.name)}`;
     router.push(href);
   };
 
