@@ -32,7 +32,7 @@ export default function ContactPage() {
       setError("Please fill in all required fields.");
       return;
     }
-  fetch('https://api.manhwagalaxy.org/contact_us', {
+  fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/contact_us`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

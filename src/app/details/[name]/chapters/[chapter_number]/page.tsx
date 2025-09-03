@@ -33,14 +33,14 @@ export default function ChapterNumberOnly() {
   const decoded = decodeURIComponent(nameJoined);
 
   useEffect(() => {
-    document.title = `${decoded} - Chapter ${chapter_number} | ManhwaGalaxy`;
+  document.title = `${decoded} - Chapter ${chapter_number} | ${process.env.NEXT_PUBLIC_SITE_NAME}`;
     let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
     if (!meta) {
       meta = document.createElement('meta') as HTMLMetaElement;
       meta.name = "description";
       document.head.appendChild(meta);
     }
-    meta.content = `Read ${decoded} Chapter ${chapter_number} online at ManhwaGalaxy. Stay updated with the latest chapters.`;
+  meta.content = `Read ${decoded} Chapter ${chapter_number} online at ${process.env.NEXT_PUBLIC_SITE_NAME}. Stay updated with the latest chapters.`;
   }, [decoded, chapter_number]);
 
   // Chapter list state (lightweight)
@@ -84,9 +84,9 @@ export default function ChapterNumberOnly() {
     const endpoints: string[] = [];
     variants.forEach(v=>{
       const enc = encodeURIComponent(v);
-  endpoints.push(`https://api.manhwagalaxy.org/manhwa/${enc}/chapters?order=esc`);
-  endpoints.push(`https://api.manhwagalaxy.org/manhwa/${enc}/chapters?order=asc`);
-  endpoints.push(`https://api.manhwagalaxy.org/manhwa/${enc}/chapters`);
+  endpoints.push(`${process.env.NEXT_PUBLIC_API_BASE_URL}/manhwa/${enc}/chapters?order=esc`);
+  endpoints.push(`${process.env.NEXT_PUBLIC_API_BASE_URL}/manhwa/${enc}/chapters?order=asc`);
+  endpoints.push(`${process.env.NEXT_PUBLIC_API_BASE_URL}/manhwa/${enc}/chapters`);
     });
     (async ()=>{
       for(const url of endpoints){
@@ -130,7 +130,7 @@ export default function ChapterNumberOnly() {
   };
 
   const chapterNumLabel = `Chapter ${chapter_number}`;
-  const descriptionText = `Read ${decoded} online at ManhwaGalaxy. Stay updated with the latest chapters.`;
+  const descriptionText = `Read ${decoded} online at ${process.env.NEXT_PUBLIC_SITE_NAME}. Stay updated with the latest chapters.`;
 
   // Chapter images/content state
   const [chapterLoading, setChapterLoading] = useState(false);
@@ -168,9 +168,9 @@ export default function ChapterNumberOnly() {
     const endpoints: string[] = [];
     variants.forEach(v=>{
       const enc = encodeURIComponent(v);
-  endpoints.push(`https://api.manhwagalaxy.org/manhwa/${enc}/chapters/${chapter_number}?order=desc`);
-  endpoints.push(`https://api.manhwagalaxy.org/manhwa/${enc}/chapters/${chapter_number}?order=asc`);
-  endpoints.push(`https://api.manhwagalaxy.org/manhwa/${enc}/chapters/${chapter_number}`);
+  endpoints.push(`${process.env.NEXT_PUBLIC_API_BASE_URL}/manhwa/${enc}/chapters/${chapter_number}?order=desc`);
+  endpoints.push(`${process.env.NEXT_PUBLIC_API_BASE_URL}/manhwa/${enc}/chapters/${chapter_number}?order=asc`);
+  endpoints.push(`${process.env.NEXT_PUBLIC_API_BASE_URL}/manhwa/${enc}/chapters/${chapter_number}`);
     });
     (async()=>{
   let lastErr: string | number | Error | null = null;
@@ -218,9 +218,9 @@ export default function ChapterNumberOnly() {
         const endpoints: string[] = [];
         variants.forEach(v=>{
           const enc = encodeURIComponent(v);
-    endpoints.push(`https://api.manhwagalaxy.org/manhwa/${enc}/chapters/${next.chapter_number}?order=desc`);
-    endpoints.push(`https://api.manhwagalaxy.org/manhwa/${enc}/chapters/${next.chapter_number}?order=asc`);
-    endpoints.push(`https://api.manhwagalaxy.org/manhwa/${enc}/chapters/${next.chapter_number}`);
+  endpoints.push(`${process.env.NEXT_PUBLIC_API_BASE_URL}/manhwa/${enc}/chapters/${next.chapter_number}?order=desc`);
+  endpoints.push(`${process.env.NEXT_PUBLIC_API_BASE_URL}/manhwa/${enc}/chapters/${next.chapter_number}?order=asc`);
+  endpoints.push(`${process.env.NEXT_PUBLIC_API_BASE_URL}/manhwa/${enc}/chapters/${next.chapter_number}`);
         });
         let found: CachedChapterData | null = null;
         for(const url of endpoints){
@@ -261,7 +261,7 @@ export default function ChapterNumberOnly() {
   // Update document title & meta description (basic SEO enhancement)
   useEffect(()=>{
     if(decoded && chapter_number){
-      document.title = `${decoded} - Chapter ${chapter_number} | ManhwaGalaxy`;
+  document.title = `${decoded} - Chapter ${chapter_number} | ${process.env.NEXT_PUBLIC_SITE_NAME}`;
       const existing = document.querySelector('meta[name="description"]');
       if(existing) existing.setAttribute('content', descriptionText);
       else {

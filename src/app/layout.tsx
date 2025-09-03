@@ -4,8 +4,8 @@ import Header from './Header';
 import OfflineBanner from "@/components/OfflineBanner";
 
 export const metadata: Metadata = {
-  title: "Read Manga & Manhwa Online (Ad-Free) - ManhwaGalaxy",
-  description:"Read your favorite manga and manhwa at ManhwaGalaxy (also known as Manwha Galaxy or Manga Galaxy). Ad-free, fast, and updated with the latest chapters."
+  title: `Read Manga & Manhwa Online (Ad-Free) - ${process.env.NEXT_PUBLIC_SITE_NAME}`,
+  description:`Read your favorite manga and manhwa at ${process.env.NEXT_PUBLIC_SITE_NAME} (also known as Manwha Galaxy or Manga Galaxy). Ad-free, fast, and updated with the latest chapters.`
 };
 
 export const viewport: Viewport = {
@@ -26,8 +26,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-  {/* Canonical URL for SEO */}
-  <link rel="canonical" href="https://manhwagalaxy.org" />
+        {/* Canonical URL for SEO */}
+        <link rel="canonical" href={process.env.NEXT_PUBLIC_SITE_URL} />
         {/* Inline theme init to avoid flash */}
         <script
           dangerouslySetInnerHTML={{
@@ -48,8 +48,8 @@ export default function RootLayout({
   <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
   <meta name="theme-color" content="#f5f7fa" media="(prefers-color-scheme: light)" />
   {/* Performance: preconnect / dns-prefetch to API origin */}
-  <link rel="preconnect" href="https://api.manhwagalaxy.org" />
-  <link rel="dns-prefetch" href="//api.manhwagalaxy.org" />
+  <link rel="preconnect" href={process.env.NEXT_PUBLIC_API_BASE_URL} />
+  <link rel="dns-prefetch" href={`//${process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/^https?:\/\//, "")}`} />
   <link rel="icon" href="/icon/logo_32x32.png"sizes="32x32" type="image/png" />
   <link rel="icon" href="/icon/logo_16x16.png" sizes="16x16" type="image/png" />
   <link rel="icon" href="/icon/logo_32x32.png" sizes="32x32" type="image/png" />
@@ -62,23 +62,24 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{
           __html:`(()=>{let ticking=false;const btn=()=>document.getElementById('scrollTopBtn');function onScroll(){if(!ticking){requestAnimationFrame(()=>{const sY=window.scrollY;const el=btn();if(!el) return; if(sY>300){el.classList.add('visible')}else{el.classList.remove('visible')} ticking=false;});ticking=true;}};window.addEventListener('scroll',onScroll,{passive:true});window.addEventListener('DOMContentLoaded',onScroll);window.addEventListener('pageshow',onScroll);document.addEventListener('click',e=>{const el=btn(); if(el && el.contains(e.target)){window.scrollTo({top:0,behavior:'smooth'});}});})();`
         }} />
+
         {/* Google Analytics */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-YXWMQFBJ8G"></script>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}></script>
         <script dangerouslySetInnerHTML={{
           __html: `window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-YXWMQFBJ8G');`
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');`
         }} />
       </head>
       <body className="min-h-screen flex flex-col selection:bg-blue-600/30 theme-fade">
-  <OfflineBanner />
+        <OfflineBanner />
         <div id="reading-progress" />
         <Header />
-  <div className="flex-1 w-full pt-1 pb-4 md:pt-1 md:pb-5">{children}</div>
+        <div className="flex-1 w-full pt-1 pb-4 md:pt-1 md:pb-5">{children}</div>
         <footer className="mt-auto py-8 text-center text-xs text-[var(--color-text-dim)] border-t border-[var(--color-border)]">
           <div className="container-page flex flex-col gap-2">
-            <p>&copy; {new Date().getFullYear()} ManhwaGalaxy. Unofficial fan site.</p>
+            <p>&copy; {new Date().getFullYear()} {process.env.NEXT_PUBLIC_SITE_NAME}. Unofficial fan site.</p>
             <p className="opacity-70">Data provided for preview & educational purposes only.</p>
             <div className="flex justify-center gap-4 mt-2">
               <a href="/terms" className="underline hover:text-white">Terms of Service</a>

@@ -45,7 +45,7 @@ export default function SearchClient() {
 
   // Build filter query for new API
   const genreParam = Array.isArray(filters.genres) ? filters.genres.join(",") : filters.genres;
-  const url = `https://api.manhwagalaxy.org/manhwa/search?query=${encodeURIComponent(filters.query)}&genre=${encodeURIComponent(genreParam)}&page=${page}&limit=${limit}&sort=${encodeURIComponent(sort)}`;
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/manhwa/search?query=${encodeURIComponent(filters.query)}&genre=${encodeURIComponent(genreParam)}&page=${page}&limit=${limit}&sort=${encodeURIComponent(sort)}`;
 
   fetch(url)
     .then(res => {

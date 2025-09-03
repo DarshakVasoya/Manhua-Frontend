@@ -119,16 +119,16 @@ export default function Header() {
           <Link href="/" className="flex items-center gap-2 group" aria-label="Go to homepage">
             {/* Two logos; show/hide via data-theme attribute */}
             <Image
-              src="/manhwagalaxy-logo-2.svg"
-              alt="ManhwaGalaxy"
+              src={`manhwagalaxy-logo-2.svg`}
+              alt={process.env.NEXT_PUBLIC_SITE_NAME || "Site Logo"}
               width={120}
               height={48}
               className="transition group-hover:brightness-110 hidden dark-inline"
               data-logo="dark"
             />
             <Image
-              src="/manhwagalaxy-logo-2-light.svg"
-              alt="ManhwaGalaxy"
+              src={`manhwagalaxy-logo-2-light.svg`}
+              alt={process.env.NEXT_PUBLIC_SITE_NAME || "Site Logo"}
               width={120}
               height={48}
               className="transition group-hover:brightness-110"

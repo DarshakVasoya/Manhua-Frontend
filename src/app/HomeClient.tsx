@@ -19,7 +19,8 @@ interface MangaItem {
   [key: string]: unknown;
 }
 
-const API_BASE = 'https://api.manhwagalaxy.org/manhwa';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/manhwa` : '';
+console.log('API_BASE:', API_BASE);
 
 export default function HomeClient() {
   const [isOnline, setIsOnline] = useState(true);
@@ -35,16 +36,16 @@ export default function HomeClient() {
     };
   }, []);
   useEffect(() => {
-  document.title = "ManhwaGalaxy – Read Manga & Manhwa Online (Ad-Free)";
+  document.title = `${process.env.NEXT_PUBLIC_SITE_NAME} – Read Manga & Manhwa Online (Ad-Free)`;
     let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
     if (!meta) {
       meta = document.createElement('meta') as HTMLMetaElement;
       meta.name = "description";
       document.head.appendChild(meta);
     }
-    meta.content = "Discover and read the latest manhwa chapters online for free at ManhwaGalaxy. Browse genres, bookmark favorites, and stay updated with new releases.";
+  meta.content = `Discover and read the latest manhwa chapters online for free at ${process.env.NEXT_PUBLIC_SITE_NAME}. Browse genres, bookmark favorites, and stay updated with new releases.`;
   }, []);
-  const PAGE_SIZE = 24;
+  const PAGE_SIZE = Number(process.env.NEXT_PUBLIC_PAGE_SIZE) || 24;
   const [items, setItems] = useState<MangaItem[]>([]);
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
@@ -59,7 +60,9 @@ export default function HomeClient() {
     let active = true;
     setLoading(true);
     setError(null);
-    fetch(`${API_BASE}?page=${page}&limit=${PAGE_SIZE}`)
+  const fetchUrl = `${API_BASE}?page=${page}&limit=${PAGE_SIZE}`;
+  console.log('Fetching:', fetchUrl);
+  fetch(fetchUrl)
       .then(r => r.json())
       .then(data => {
         if (!active) return;
@@ -123,13 +126,13 @@ export default function HomeClient() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: `{
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "name": "ManhwaGalaxy",
-        "url": "https://manhwagalaxy.org",
-        "description": "Read your favorite manga and manhwa without ads on ManhwaGalaxy. Fast, simple, and ad-free reading experience with the latest chapters updated daily.",
+"name": "${process.env.NEXT_PUBLIC_SITE_NAME}",
+       "url": "${process.env.NEXT_PUBLIC_SITE_URL}",
+  "description": "Read your favorite manga and manhwa without ads on ${process.env.NEXT_PUBLIC_SITE_NAME}. Fast, simple, and ad-free reading experience with the latest chapters updated daily.",
         "publisher": {
           "@type": "Organization",
-          "name": "ManhwaGalaxy",
-          "url": "https://manhwagalaxy.org"
+     "url": "${process.env.NEXT_PUBLIC_SITE_URL}",
+"name": "${process.env.NEXT_PUBLIC_SITE_NAME}",
         }
       }` }} />
       {!isOnline && (
@@ -139,7 +142,7 @@ export default function HomeClient() {
         </div>
       )}
       <h1 className="sr-only" style={{fontSize: '2rem', fontWeight: 700, margin: '1.5rem 0 1rem', textAlign: 'center', color: 'var(--color-accent)'}}>
-        ManhwaGalaxy – Read Manga & Manhwa Online (Ad-Free)
+  {process.env.NEXT_PUBLIC_SITE_NAME} – Read Manga & Manhwa Online (Ad-Free)
       </h1>
       <div className="mb-1">
         <SubHeader />

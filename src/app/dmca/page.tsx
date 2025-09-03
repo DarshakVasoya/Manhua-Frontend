@@ -3,14 +3,14 @@ import React, { useEffect } from "react";
 
 export default function DMCA() {
   useEffect(() => {
-    document.title = "DMCA Policy | ManhwaGalaxy";
+  document.title = `DMCA Policy | ${process.env.NEXT_PUBLIC_SITE_NAME}`;
     let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
     if (!meta) {
       meta = document.createElement('meta') as HTMLMetaElement;
       meta.name = "description";
       document.head.appendChild(meta);
     }
-    meta.content = "Read our DMCA Policy to understand how copyright issues are handled at ManhwaGalaxy. Contact us for takedown requests or copyright concerns.";
+  meta.content = `Read our DMCA Policy to understand how copyright issues are handled at ${process.env.NEXT_PUBLIC_SITE_NAME}. Contact us for takedown requests or copyright concerns.`;
   }, []);
 
   return (
@@ -18,7 +18,7 @@ export default function DMCA() {
       <h1 className="text-2xl font-bold mb-6">DMCA Policy</h1>
       <div className="space-y-4 text-sm text-[var(--color-text-dim)]">
         <p>
-          ManhwaGalaxy respects the intellectual property rights of others and expects users to do the same. If you believe that your copyrighted work has been posted on our site without authorization, please contact us immediately.
+          {process.env.NEXT_PUBLIC_SITE_NAME} respects the intellectual property rights of others and expects users to do the same. If you believe that your copyrighted work has been posted on our site without authorization, please contact us immediately.
         </p>
         <h2 className="text-lg font-semibold mt-6 mb-2">How to File a DMCA Takedown Request</h2>
         <p>
@@ -32,7 +32,7 @@ export default function DMCA() {
           <li>A statement, under penalty of perjury, that the information is accurate and you are authorized to act</li>
         </ul>
         <p>
-          Send your DMCA request to: <a href="mailto:admin@manhwagalaxy.com" className="text-[var(--color-accent)] underline">admin@manhwagalaxy.com</a>
+          Send your DMCA request to: <a href={`mailto:admin@${process.env.NEXT_PUBLIC_SITE_NAME}.com`} className="text-[var(--color-accent)] underline">admin@{process.env.NEXT_PUBLIC_SITE_NAME}.com</a>
         </p>
         <h2 className="text-lg font-semibold mt-6 mb-2">Counter Notification</h2>
         <p>
@@ -40,7 +40,7 @@ export default function DMCA() {
         </p>
         <h2 className="text-lg font-semibold mt-6 mb-2">Repeat Infringers</h2>
         <p>
-          ManhwaGalaxy may terminate accounts of users who are repeat infringers of copyright.
+          {process.env.NEXT_PUBLIC_SITE_NAME} may terminate accounts of users who are repeat infringers of copyright.
         </p>
       </div>
     </main>

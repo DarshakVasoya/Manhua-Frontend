@@ -6,7 +6,7 @@ export default function NotFound() {
   return (
     <>
       <head>
-        <meta name="description" content="404 - Page Not Found. The page you are looking for does not exist on ManhwaGalaxy." />
+  <meta name="description" content={`404 - Page Not Found. The page you are looking for does not exist on ${process.env.NEXT_PUBLIC_SITE_NAME}.`} />
         <meta name="robots" content="noindex" />
       </head>
       <main className="container-page max-w-xl mx-auto py-20 flex flex-col items-center justify-center">

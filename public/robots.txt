@@ -1,4 +1,2 @@
 User-agent: *
-Allow: /
-
-Sitemap: https://manhwagalaxy.org/sitemap-index.xml
+Disallow: /

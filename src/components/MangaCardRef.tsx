@@ -84,7 +84,7 @@ const MangaCardRef: React.FC<MangaCardRefProps> = ({
             {!imgLoaded && <div className={styles.skeleton} />}
             <Image
               src={imageUrl || "/default.jpg"}
-              alt={`${title} - ManhwaGalaxy (Manga Galaxy)`}
+              alt={`${title} - ${process.env.NEXT_PUBLIC_SITE_NAME} (Manga Galaxy)`}
               width={180}
               height={240}
               onLoad={() => setImgLoaded(true)}

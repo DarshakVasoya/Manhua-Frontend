@@ -5,7 +5,7 @@ import { usePathname, useRouter, useParams } from 'next/navigation';
 import MangaCardRef from '@/components/MangaCardRef';
 import SubHeader from '@/components/SubHeader';
 
-const API_BASE = 'https://api.manhwagalaxy.org/manhwa';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/manhwa` : '';
 
 export default function CategoryPage() {
  const router = useRouter();
@@ -14,19 +14,19 @@ export default function CategoryPage() {
  const category = decodeURIComponent(slug || '');
 
   React.useEffect(() => {
-    document.title = `${category} Manga - Read ${category} Manhwa Online | ManhwaGalaxy`;
+  document.title = `${category} Manga - Read ${category} Manhwa Online | ${process.env.NEXT_PUBLIC_SITE_NAME}`;
     let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
     // Utility to format title
     function formatTitle(str: string) {
       return str.replace(/-/g, ' ').replace(/\s+/g, ' ').trim().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     }
-    document.title = `${formatTitle(category)} Manga - Read ${formatTitle(category)} Manhwa Online | ManhwaGalaxy`;
+  document.title = `${formatTitle(category)} Manga - Read ${formatTitle(category)} Manhwa Online | ${process.env.NEXT_PUBLIC_SITE_NAME}`;
     if (!meta) {
       meta = document.createElement('meta') as HTMLMetaElement;
       meta.name = "description";
       document.head.appendChild(meta);
     }
-    meta.content = `Browse and read the latest ${category} manhwa chapters online for free at ManhwaGalaxy. Discover new releases and bookmark your favorites.`;
+  meta.content = `Browse and read the latest ${category} manhwa chapters online for free at ${process.env.NEXT_PUBLIC_SITE_NAME}. Discover new releases and bookmark your favorites.`;
   }, [category]);
  
   // Redirect special values back to home (client side)

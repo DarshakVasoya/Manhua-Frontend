@@ -3,14 +3,14 @@ import React from "react";
 
 export default function PrivacyPage() {
   React.useEffect(() => {
-    document.title = "Privacy Policy | ManhwaGalaxy";
+  document.title = `Privacy Policy | ${process.env.NEXT_PUBLIC_SITE_NAME}`;
     let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
     if (!meta) {
       meta = document.createElement('meta') as HTMLMetaElement;
       meta.name = "description";
       document.head.appendChild(meta);
     }
-    meta.content = "Read the Privacy Policy for ManhwaGalaxy. Learn how we handle data, cookies, and third-party services.";
+  meta.content = `Read the Privacy Policy for ${process.env.NEXT_PUBLIC_SITE_NAME}. Learn how we handle data, cookies, and third-party services.`;
   }, []);
   return (
     <main className="container-page max-w-3xl mx-auto py-10">
@@ -21,11 +21,11 @@ export default function PrivacyPage() {
       </section>
       <section className="mb-6">
         <h2 className="text-lg font-semibold mb-2">2. Cookies</h2>
-        <p>ManhwaGalaxy may use cookies to enhance user experience and analyze site traffic. You can disable cookies in your browser settings, but some features may not work as intended.</p>
+  <p>{process.env.NEXT_PUBLIC_SITE_NAME} may use cookies to enhance user experience and analyze site traffic. You can disable cookies in your browser settings, but some features may not work as intended.</p>
       </section>
       <section className="mb-6">
         <h2 className="text-lg font-semibold mb-2">3. Third-Party Services</h2>
-        <p>We may use third-party analytics or advertising services that collect information in accordance with their own privacy policies. ManhwaGalaxy is not responsible for the practices of these third parties.</p>
+  <p>We may use third-party analytics or advertising services that collect information in accordance with their own privacy policies. {process.env.NEXT_PUBLIC_SITE_NAME} is not responsible for the practices of these third parties.</p>
       </section>
       <section className="mb-6">
         <h2 className="text-lg font-semibold mb-2">4. Data Security</h2>
@@ -37,7 +37,7 @@ export default function PrivacyPage() {
       </section>
       <section>
         <h2 className="text-lg font-semibold mb-2">6. Contact</h2>
-        <p>If you have any questions about this Privacy Policy, please contact us at support@manhwagalaxy.com.</p>
+  <p>If you have any questions about this Privacy Policy, please contact us at support@${process.env.NEXT_PUBLIC_SITE_NAME}.com.</p>
       </section>
     </main>
   );

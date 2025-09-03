@@ -14,7 +14,8 @@ export async function GET(req: NextRequest) {
 		}
 
 		// Upstream endpoint (adjust if backend changes)
-		const upstream = `https://api.manhwagalaxy.org/manhwa/suggest?prefix=${encodeURIComponent(prefix)}&limit=${limit}&fields=${encodeURIComponent(fields.join(","))}`;
+		const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+		const upstream = `${apiBase}/manhwa/suggest?prefix=${encodeURIComponent(prefix)}&limit=${limit}&fields=${encodeURIComponent(fields.join(","))}`;
 		const res = await fetch(upstream, { headers: { Accept: "application/json" }, cache: "no-store" });
 		if (res.status === 204) return new Response(null, { status: 204 });
 		if (!res.ok) return Response.json({ items: [], ttl: 60 }, { status: 200 });

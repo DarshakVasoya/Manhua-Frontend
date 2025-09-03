@@ -96,7 +96,7 @@ export const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({ initialQue
         return;
       }
 
-      const url = `https://api.manhwagalaxy.org/manhwa/suggest?prefix=${encodeURIComponent(q)}&limit=${limit}&fields=name,slug`;
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/manhwa/suggest?prefix=${encodeURIComponent(q)}&limit=${limit}&fields=name,slug`;
       fetch(url, { signal: controller.signal })
         .then(async (res) => {
           if (res.status === 204) return { items: [], ttl: 60 };

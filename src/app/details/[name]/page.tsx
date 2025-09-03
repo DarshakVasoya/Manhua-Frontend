@@ -3,7 +3,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import Link from "next/link";
 import Image from "next/image";
 import { useParams } from 'next/navigation';
-const API_BASE = 'https://api.manhwagalaxy.org/manhwa';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/manhwa` : '';
 
 interface Chapter {
   chapter_number: number | string;
@@ -31,14 +31,14 @@ export default function DetailsPage(){
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
   React.useEffect(() => {
-    document.title = `${decoded} | ManhwaGalaxy`;
+  document.title = `${decoded} | ${process.env.NEXT_PUBLIC_SITE_NAME}`;
     let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
     if (!meta) {
       meta = document.createElement('meta') as HTMLMetaElement;
       meta.name = "description";
       document.head.appendChild(meta);
     }
-    meta.content = `Read ${decoded} manga online at ManhwaGalaxy. Discover chapters, bookmark your favorites, and stay updated with the latest releases.`;
+  meta.content = `Read ${decoded} manga online at ${process.env.NEXT_PUBLIC_SITE_NAME}. Discover chapters, bookmark your favorites, and stay updated with the latest releases.`;
   }, [decoded]);
  
   
@@ -203,7 +203,7 @@ return () => {
     return ()=> { active=false; };
   }, [decoded]);
 
-  useEffect(()=>{ if(decoded) { document.title = `${decoded} | ManhwaGalaxy`; } }, [decoded]);
+  useEffect(()=>{ if(decoded) { document.title = `${decoded} | ${process.env.NEXT_PUBLIC_SITE_NAME}`; } }, [decoded]);
 
   // Bookmark (localStorage array)
   useEffect(() => {
@@ -227,13 +227,13 @@ return () => {
     "@type": "Book",
     "name": details.name || decoded,
     "image": details.cover_image || "",
-    "url": `https://manhwagalaxy.org/details/${hyphenName}`,
+    "url": `${process.env.NEXT_PUBLIC_SITE_URL}/details/${hyphenName}`,
     "author": details.author || "Unknown",
     "genre": details.genres || [],
-    "description": details.description || "Read manga online at ManhwaGalaxy.",
+  "description": details.description || `Read manga online at ${process.env.NEXT_PUBLIC_SITE_NAME}.`,
     "publisher": {
       "@type": "Organization",
-      "name": "ManhwaGalaxy"
+  "name": process.env.NEXT_PUBLIC_SITE_NAME
     }
   } : null;
   const toggleBookmark = () => {
@@ -378,7 +378,7 @@ return () => {
                   <React.Suspense fallback={<div className="w-56 aspect-[3/4.3] rounded-lg border border-[var(--color-border)] shimmer" />}>
                     <div className="relative overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <Image src={details.cover_image || "/default.jpg"} alt={`Cover image for ${details.name} - ManhwaGalaxy`} className="w-full h-auto object-cover" width={220} height={320} />
+                      <Image src={details.cover_image || "/default.jpg"} alt={`Cover image for ${details.name} - ${process.env.NEXT_PUBLIC_SITE_NAME}`} className="w-full h-auto object-cover" width={220} height={320} />
                       {details.colored && <span className="absolute top-2 left-2 text-[10px] bg-[var(--color-accent)] text-white font-semibold px-2 py-1 rounded-md flex items-center gap-1"><span>Color</span></span>}
                     </div>
                   </React.Suspense>

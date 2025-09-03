@@ -1,7 +1,7 @@
 import React from "react";
 import MangaCardRef from "./MangaCardRef";
 
-const BASE = "https://api.manhwagalaxy.org";
+const BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 const normalizeUrl = (u: string) => {
   if (!u) return "";
