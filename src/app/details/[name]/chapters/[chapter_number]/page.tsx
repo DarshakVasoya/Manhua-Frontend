@@ -24,8 +24,13 @@ if(!globalThis.__chapterImageCache){
 }
 
 export default function ChapterNumberOnly() {
-  // ...existing code...
+  // Scroll to top on chapter change
   const params = useParams();
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [params?.chapter_number]);
+  // ...existing code...
+  // ...existing code...
   const router = useRouter();
   const rawName = params?.name as string | string[] | undefined;
   const chapter_number = params?.chapter_number as string;

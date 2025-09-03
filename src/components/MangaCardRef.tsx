@@ -115,7 +115,7 @@ const MangaCardRef: React.FC<MangaCardRefProps> = ({
                     className={styles.ephiv}
                     title={formatChapterLabel(ch.number)}
                   >
-                    <span className={styles.fivchap}>{formatChapterLabel(ch.number)}</span>
+                    <span className={styles.fivchap}>{(ch.number)}</span>
                     <span className={styles.metaWrap}>
                       {postedOn && i === 0 && <span className={styles.fivtime}>{postedOn}</span>}
                       {ch.time && <span className={styles.fivtime}>{ch.time}</span>}

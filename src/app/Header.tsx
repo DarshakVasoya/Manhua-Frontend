@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from 'next/navigation';
+
 // Removed inline SearchBar in favor of a search icon that navigates to /search
 
 
@@ -119,7 +120,7 @@ export default function Header() {
           <Link href="/" className="flex items-center gap-2 group" aria-label="Go to homepage">
             {/* Two logos; show/hide via data-theme attribute */}
             <Image
-              src={`manhwagalaxy-logo-2.svg`}
+              src={`/manhwagalaxy-logo-2.svg`}
               alt={process.env.NEXT_PUBLIC_SITE_NAME || "Site Logo"}
               width={120}
               height={48}
@@ -127,7 +128,7 @@ export default function Header() {
               data-logo="dark"
             />
             <Image
-              src={`manhwagalaxy-logo-2-light.svg`}
+              src={`/manhwagalaxy-logo-2-light.svg`}
               alt={process.env.NEXT_PUBLIC_SITE_NAME || "Site Logo"}
               width={120}
               height={48}
